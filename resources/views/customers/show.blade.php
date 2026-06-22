@@ -18,7 +18,7 @@
     <div class="lg:col-span-1 space-y-4">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex items-center gap-4 mb-6">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-2xl">
+                <div class="w-14 h-14 rounded-2xl {{ $customer->isCatering() ? 'bg-purple-100 text-purple-700' : 'bg-emerald-100 text-emerald-700' }} flex items-center justify-center font-bold text-2xl">
                     {{ strtoupper(substr($customer->nama, 0, 1)) }}
                 </div>
                 <div>
@@ -28,6 +28,22 @@
             </div>
 
             <div class="space-y-3 text-sm">
+                {{-- Badge Tipe --}}
+                <div class="flex items-center gap-3">
+                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    @if($customer->isCatering())
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
+                            🍽️ Catering
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                            🏪 Resto
+                        </span>
+                    @endif
+                </div>
+
                 <div class="flex gap-3">
                     <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -47,10 +63,11 @@
         </div>
     </div>
 
-    {{-- Outlets & POs --}}
+    {{-- Right side: Outlets (Resto) / Purchase Orders --}}
     <div class="lg:col-span-2 space-y-6">
 
-        {{-- Outlets --}}
+        @if($customer->isResto())
+        {{-- Outlets — hanya untuk Resto --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100" x-data="{ addingOutlet: false, newOutlet: '' }">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">
                 <h3 class="font-semibold text-gray-900">Outlet ({{ $customer->outlets->count() }})</h3>
@@ -107,6 +124,18 @@
                 @endforelse
             </div>
         </div>
+        @else
+        {{-- Info Catering --}}
+        <div class="bg-purple-50 rounded-2xl border border-purple-100 p-5">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🍽️</span>
+                <div>
+                    <p class="text-sm font-semibold text-purple-800">Customer Catering</p>
+                    <p class="text-sm text-purple-600 mt-0.5">Customer ini tidak memiliki outlet tetap. Setiap Purchase Order memiliki nama event yang berbeda-beda.</p>
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- Purchase Orders --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
@@ -120,7 +149,15 @@
                         <div>
                             <a href="{{ route('purchase-orders.show', $po) }}"
                                class="text-sm font-medium text-emerald-600 hover:underline">{{ $po->no_po }}</a>
-                            <p class="text-xs text-gray-400">{{ $po->outlet->nama_outlet ?? '-' }} — {{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }}</p>
+                            @if($customer->isCatering())
+                                <p class="text-xs text-gray-400">
+                                    🎉 {{ $po->nama_event ?? '-' }} — {{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }}
+                                </p>
+                            @else
+                                <p class="text-xs text-gray-400">
+                                    {{ $po->outlet->nama_outlet ?? '-' }} — {{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }}
+                                </p>
+                            @endif
                         </div>
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                             {{ $po->status === 'baru' ? 'bg-blue-50 text-blue-700' : ($po->status === 'proses' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700') }}">

@@ -1,7 +1,7 @@
 <x-app-layout>
 @section('title', 'Laporan P&L')
 @section('page-title', 'Laporan Profit & Loss')
-@section('page-subtitle', 'Laporan laba rugi bulanan dengan breakdown OPEX')
+@section('page-subtitle', 'Laporan laba kotor bulanan')
 
 @section('header-actions')
     <form method="GET" action="{{ route('finance.pl') }}" class="flex items-center gap-2">
@@ -26,12 +26,12 @@
                 </p>
             </div>
             <div class="text-right">
-                <p class="text-sm text-emerald-200">Net Profit</p>
-                <p class="text-3xl font-bold {{ $netProfit >= 0 ? 'text-white' : 'text-red-300' }}">
-                    Rp {{ number_format($netProfit, 0, ',', '.') }}
+                <p class="text-sm text-emerald-200">Gross Profit</p>
+                <p class="text-3xl font-bold {{ $grossProfit >= 0 ? 'text-white' : 'text-red-300' }}">
+                    Rp {{ number_format($grossProfit, 0, ',', '.') }}
                 </p>
-                <p class="text-sm {{ $netMarginPct >= 0 ? 'text-emerald-200' : 'text-red-300' }}">
-                    Net Margin: {{ number_format($netMarginPct, 1) }}%
+                <p class="text-sm {{ $marginPct >= 0 ? 'text-emerald-200' : 'text-red-300' }}">
+                    Gross Margin: {{ number_format($marginPct, 1) }}%
                 </p>
             </div>
         </div>
@@ -84,47 +84,19 @@
                 </p>
             </div>
 
-            {{-- OPEX Breakdown --}}
-            <div class="px-6 py-4">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-1 h-6 bg-purple-400 rounded-full"></div>
-                    <p class="font-semibold text-gray-900">OPEX (Biaya Operasional)</p>
-                </div>
-                @if($opexBreakdown->count() > 0)
-                <div class="ml-4 space-y-2">
-                    @foreach($opexBreakdown as $opex)
-                    <div class="flex items-center justify-between text-sm">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-purple-300 rounded-full"></span>
-                            <span class="text-gray-600">{{ $opex->kategori }}</span>
-                            <span class="text-xs text-gray-400">({{ $opex->count }} transaksi)</span>
-                        </div>
-                        <span class="font-semibold text-purple-700">– Rp {{ number_format($opex->total, 0, ',', '.') }}</span>
-                    </div>
-                    @endforeach
-                    <div class="flex items-center justify-between text-sm pt-2 border-t border-gray-100 mt-2">
-                        <span class="font-semibold text-gray-700">Total OPEX</span>
-                        <span class="font-bold text-purple-700">– Rp {{ number_format($totalOpex, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-                @else
-                <p class="ml-4 text-sm text-gray-400 italic">Belum ada biaya operasional bulan ini.</p>
-                @endif
-            </div>
-
-            {{-- Net Profit --}}
-            <div class="flex items-center justify-between px-6 py-5 {{ $netProfit >= 0 ? 'bg-emerald-50' : 'bg-red-50' }}">
+            {{-- Gross Profit --}}
+            <div class="flex items-center justify-between px-6 py-5 {{ $grossProfit >= 0 ? 'bg-emerald-50' : 'bg-red-50' }}">
                 <div class="flex items-center gap-3">
-                    <div class="w-1 h-12 {{ $netProfit >= 0 ? 'bg-emerald-600' : 'bg-red-500' }} rounded-full"></div>
+                    <div class="w-1 h-12 {{ $grossProfit >= 0 ? 'bg-emerald-600' : 'bg-red-500' }} rounded-full"></div>
                     <div>
-                        <p class="text-lg font-bold {{ $netProfit >= 0 ? 'text-emerald-900' : 'text-red-900' }}">NET PROFIT</p>
-                        <p class="text-sm {{ $netProfit >= 0 ? 'text-emerald-700' : 'text-red-700' }}">
-                            Net Margin: {{ number_format($netMarginPct, 1) }}%
+                        <p class="text-lg font-bold {{ $grossProfit >= 0 ? 'text-emerald-900' : 'text-red-900' }}">GROSS PROFIT</p>
+                        <p class="text-sm {{ $grossProfit >= 0 ? 'text-emerald-700' : 'text-red-700' }}">
+                            Gross Margin: {{ number_format($marginPct, 1) }}%
                         </p>
                     </div>
                 </div>
-                <p class="text-3xl font-black {{ $netProfit >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
-                    Rp {{ number_format($netProfit, 0, ',', '.') }}
+                <p class="text-3xl font-black {{ $grossProfit >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                    Rp {{ number_format($grossProfit, 0, ',', '.') }}
                 </p>
             </div>
         </div>
@@ -144,12 +116,7 @@
             </svg>
             Tren Harga Beli
         </a>
-        <a href="{{ route('biaya-operasional.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 transition-colors shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Input Biaya Operasional
-        </a>
+        {{-- Link Input Biaya Operasional dihapus — SKILL.md Perubahan 5 --}}
     </div>
 </div>
 </x-app-layout>

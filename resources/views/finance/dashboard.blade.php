@@ -1,7 +1,7 @@
 <x-app-layout>
 @section('title', 'Finance Dashboard')
 @section('page-title', 'Dashboard Analitik Keuangan')
-@section('page-subtitle', 'KPI, tren revenue, dan analisis biaya operasional')
+@section('page-subtitle', 'KPI, tren revenue, dan analisis gross profit')
 
 @section('header-actions')
     <form method="GET" action="{{ route('finance.dashboard') }}" class="flex items-center gap-2">
@@ -76,14 +76,14 @@
             <div class="flex items-start justify-between mb-3">
                 <div class="p-2 bg-white/20 rounded-xl">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M9 14h.01M12 14h.01M15 14h.01M5 7a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V7z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                     </svg>
                 </div>
-                <span class="text-xs text-emerald-200 bg-white/10 px-2 py-0.5 rounded-full font-medium">BEP</span>
+                <span class="text-xs text-emerald-200 bg-white/10 px-2 py-0.5 rounded-full font-medium">Margin</span>
             </div>
-            <p class="text-xs text-emerald-200 font-medium uppercase tracking-wider mb-1">Target Harian</p>
-            <p class="text-xl font-bold">Rp {{ number_format($bepDaily, 0, ',', '.') }}</p>
-            <p class="text-xs text-emerald-300 mt-1">OPEX bulan ini / hari kerja</p>
+            <p class="text-xs text-emerald-200 font-medium uppercase tracking-wider mb-1">Gross Margin</p>
+            <p class="text-xl font-bold">{{ number_format($marginPct, 1) }}%</p>
+            <p class="text-xs text-emerald-300 mt-1">Dari Gross Revenue periode ini</p>
         </div>
     </div>
 
@@ -118,32 +118,20 @@
     @endif
 
     {{-- ─── ANALYTICS-002: Charts ───────────────────────────────────────── --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="font-semibold text-gray-900">Tren Revenue Harian</h3>
-                    <p class="text-xs text-gray-400">{{ $days }} hari terakhir (PO selesai)</p>
-                </div>
-                <a href="{{ route('finance.pl') }}" class="text-xs text-emerald-600 hover:underline">Laporan P&L →</a>
-            </div>
-            <div style="position:relative; height:240px;">
-                <canvas id="revenueChart"></canvas>
-            </div>
-        </div>
 
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-            <div class="mb-4">
-                <h3 class="font-semibold text-gray-900">OPEX per Kategori</h3>
-                <p class="text-xs text-gray-400">Distribusi biaya operasional</p>
-            </div>
-            <div style="position:relative; height:180px;">
-                <canvas id="opexChart"></canvas>
-            </div>
-            <div class="mt-3 space-y-1.5" id="opexLegend"></div>
+    {{-- Revenue Harian Chart --}}
+    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <div class="mb-4">
+            <h3 class="font-semibold text-gray-900">Tren Revenue Harian</h3>
+            <p class="text-xs text-gray-400">{{ $days }} hari terakhir</p>
+        </div>
+        <div style="position:relative; height:220px;">
+            <canvas id="revenueChart"></canvas>
         </div>
     </div>
 
+    {{-- Bottom Charts: Top Produk + P&L Summary --}}
+    {{-- OPEX Doughnut dihapus — SKILL.md Perubahan 5 --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <div class="mb-4">
@@ -166,7 +154,6 @@
                         ['label' => 'Gross Revenue', 'val' => $grossRevenue, 'color' => 'bg-emerald-500', 'text' => 'text-emerald-700', 'ratio' => 100],
                         ['label' => 'COGS', 'val' => $cogs, 'color' => 'bg-amber-400', 'text' => 'text-amber-700', 'ratio' => $grossRevenue > 0 ? min(($cogs/$grossRevenue)*100,100) : 0],
                         ['label' => 'Gross Profit', 'val' => $grossProfit, 'color' => $grossProfit>=0 ? 'bg-blue-500' : 'bg-red-500', 'text' => $grossProfit>=0 ? 'text-blue-700' : 'text-red-600', 'ratio' => $grossRevenue > 0 ? min((abs($grossProfit)/$grossRevenue)*100,100) : 0],
-                        ['label' => 'OPEX', 'val' => $opex, 'color' => 'bg-purple-400', 'text' => 'text-purple-700', 'ratio' => $grossRevenue > 0 ? min(($opex/$grossRevenue)*100,100) : 0],
                     ];
                 @endphp
                 @foreach($bars as $bar)
@@ -182,9 +169,9 @@
                 @endforeach
                 <div class="pt-4 border-t border-gray-100">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="font-bold text-gray-800 text-base">Net Profit</span>
-                        <span class="text-2xl font-bold {{ $netProfit >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
-                            Rp {{ number_format($netProfit, 0, ',', '.') }}
+                        <span class="font-bold text-gray-800 text-base">Gross Profit</span>
+                        <span class="text-2xl font-bold {{ $grossProfit >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                            Rp {{ number_format($grossProfit, 0, ',', '.') }}
                         </span>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
@@ -249,33 +236,7 @@ new Chart(document.getElementById('revenueChart'), {
     }
 });
 
-// 2. Doughnut: OPEX
-if (opexKategori.length > 0) {
-    new Chart(document.getElementById('opexChart'), {
-        type: 'doughnut',
-        data: {
-            labels: opexKategori.map(o => o.kategori),
-            datasets: [{ data: opexKategori.map(o => o.total), backgroundColor: COLORS, borderWidth: 2, borderColor:'#fff', hoverOffset:6 }]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false, cutout: '65%',
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: ctx => ctx.label + ': Rp ' + new Intl.NumberFormat('id-ID').format(ctx.raw) } }
-            }
-        }
-    });
-    const legend = document.getElementById('opexLegend');
-    const total = opexKategori.reduce((a,b) => a+b.total, 0);
-    opexKategori.forEach((o, i) => {
-        const pct = total > 0 ? ((o.total/total)*100).toFixed(1) : 0;
-        legend.innerHTML += `<div class="flex items-center gap-2 text-xs"><span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:${COLORS[i]}"></span><span class="text-gray-600 flex-1 truncate">${o.kategori}</span><span class="font-semibold text-gray-800">${pct}%</span></div>`;
-    });
-} else {
-    document.getElementById('opexChart').parentElement.innerHTML = '<div class="h-full flex items-center justify-center text-gray-400 text-sm">Belum ada data OPEX</div>';
-}
-
-// 3. Horizontal Bar: Top Produk
+// 2. Horizontal Bar: Top Produk — (OPEX Doughnut dihapus SKILL.md Perubahan 5)
 if (topProduk.length > 0) {
     new Chart(document.getElementById('topProdukChart'), {
         type: 'bar',

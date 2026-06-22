@@ -47,8 +47,9 @@
                 <tr class="bg-gray-50 border-b border-gray-100">
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">No. PO</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Customer</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Outlet</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Tanggal</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Outlet / Event</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Tanggal PO</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Tgl Kirim</th>
                     <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -70,10 +71,18 @@
                                class="text-gray-700 hover:text-emerald-600 font-medium">{{ $po->customer->nama }}</a>
                         </td>
                         <td class="px-6 py-4 text-gray-500 hidden lg:table-cell">
-                            {{ $po->outlet->nama_outlet ?? '-' }}
+                            @if($po->customer->isCatering())
+                                <span class="text-purple-600">🎉 {{ $po->nama_event ?? '-' }}</span>
+                            @else
+                                {{ $po->outlet->nama_outlet ?? '-' }}
+                            @endif
                         </td>
                         <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">
                             {{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }}
+                        </td>
+                        {{-- Tanggal Kirim — Perubahan 1 SKILL.md --}}
+                        <td class="px-6 py-4 text-gray-500 hidden lg:table-cell">
+                            {{ $po->tanggal_kirim ? \Carbon\Carbon::parse($po->tanggal_kirim)->format('d/m/Y') : '-' }}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
@@ -103,7 +112,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-400 text-sm">
                             Tidak ada Purchase Order ditemukan.
                             <a href="{{ route('purchase-orders.create') }}" class="text-emerald-600 hover:underline">Buat PO baru →</a>
                         </td>

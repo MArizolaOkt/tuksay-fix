@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\PurchaseOrder;
-use App\Models\BiayaOperasional;
+// BiayaOperasional dihapus — SKILL.md Perubahan 5
 use App\Models\HargaBeli;
 use App\Models\Barang;
 use Illuminate\Http\Request;
@@ -42,19 +42,13 @@ class FinanceReportController extends Controller
             ->whereBetween('purchase_orders.tanggal', [$from->toDateString(), $to->toDateString()])
             ->sum(DB::raw('po_items.qty * harga_belis.harga_beli'));
 
-        // OPEX
-        $opex = BiayaOperasional::whereBetween('tanggal', [$from->toDateString(), $to->toDateString()])
-            ->sum('jumlah');
-
+        // OPEX dihapus — SKILL.md Perubahan 5
         $grossProfit  = $grossRevenue - $cogs;
-        $netProfit    = $grossProfit - $opex;
+        $netProfit    = $grossProfit; // Net Profit = Gross Profit (OPEX dihapus)
         $marginPct    = $grossRevenue > 0 ? ($grossProfit / $grossRevenue) * 100 : 0;
 
-        // ANALYTICS-005: BEP daily
-        $monthlyOpex  = BiayaOperasional::whereYear('tanggal', now()->year)
-            ->whereMonth('tanggal', now()->month)
-            ->sum('jumlah');
-        $bepDaily     = $monthlyOpex > 0 ? $monthlyOpex / now()->daysInMonth : 0;
+        // BEP dihapus — SKILL.md Perubahan 5
+        $bepDaily     = 0;
 
         // ANALYTICS-002: Chart.js data
         // Line chart: Revenue harian 30 hari terakhir
@@ -71,11 +65,8 @@ class FinanceReportController extends Controller
             ->orderBy('purchase_orders.tanggal')
             ->get();
 
-        // Doughnut: OPEX per kategori
-        $opexKategori = BiayaOperasional::whereBetween('tanggal', [$from->toDateString(), $to->toDateString()])
-            ->select('kategori', DB::raw('SUM(jumlah) as total'))
-            ->groupBy('kategori')
-            ->get();
+        // Doughnut OPEX dihapus — SKILL.md Perubahan 5
+        $opexKategori = collect();
 
         // Horizontal Bar: Top 10 produk by revenue
         $topProduk = DB::table('po_items')
@@ -92,6 +83,7 @@ class FinanceReportController extends Controller
         // ANALYTICS-003: Price volatility alerts
         $alerts = $this->getPriceAlerts();
 
+        $opex = 0; // OPEX dihapus — SKILL.md Perubahan 5
         return view('finance.dashboard', compact(
             'grossRevenue', 'cogs', 'grossProfit', 'netProfit', 'marginPct',
             'opex', 'bepDaily', 'days',
@@ -205,15 +197,11 @@ class FinanceReportController extends Controller
             ->whereBetween('purchase_orders.tanggal', [$from, $to])
             ->sum(DB::raw('po_items.qty * harga_belis.harga_beli'));
 
-        // OPEX breakdown per kategori
-        $opexBreakdown = BiayaOperasional::whereBetween('tanggal', [$from, $to])
-            ->select('kategori', DB::raw('SUM(jumlah) as total'), DB::raw('COUNT(*) as count'))
-            ->groupBy('kategori')
-            ->get();
-
-        $totalOpex    = $opexBreakdown->sum('total');
+        // OPEX breakdown dihapus — SKILL.md Perubahan 5
+        $opexBreakdown = collect();
+        $totalOpex    = 0;
         $grossProfit  = $revenue - $cogs;
-        $netProfit    = $grossProfit - $totalOpex;
+        $netProfit    = $grossProfit; // Net Profit = Gross Profit (OPEX dihapus)
         $marginPct    = $revenue > 0 ? ($grossProfit / $revenue) * 100 : 0;
         $netMarginPct = $revenue > 0 ? ($netProfit / $revenue) * 100 : 0;
 

@@ -39,18 +39,32 @@
                 </div>
                 @endif
                 <div class="flex justify-between">
-                    <span class="text-gray-500">Tanggal</span>
+                    <span class="text-gray-500">Tanggal PO</span>
                     <span class="font-medium text-gray-700">{{ \Carbon\Carbon::parse($purchaseOrder->tanggal)->format('d/m/Y') }}</span>
+                </div>
+                {{-- Tanggal Kirim — Perubahan 1 SKILL.md --}}
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Tanggal Kirim</span>
+                    <span class="font-medium {{ $purchaseOrder->tanggal_kirim ? 'text-gray-700' : 'text-gray-400 italic' }}">
+                        {{ $purchaseOrder->tanggal_kirim ? \Carbon\Carbon::parse($purchaseOrder->tanggal_kirim)->format('d/m/Y') : '-' }}
+                    </span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-500">Customer</span>
                     <a href="{{ route('customers.show', $purchaseOrder->customer) }}"
                        class="font-medium text-emerald-600 hover:underline">{{ $purchaseOrder->customer->nama }}</a>
                 </div>
+                @if($purchaseOrder->customer->isCatering())
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Nama Event</span>
+                    <span class="font-medium text-purple-700">🎉 {{ $purchaseOrder->nama_event ?? '-' }}</span>
+                </div>
+                @else
                 <div class="flex justify-between">
                     <span class="text-gray-500">Outlet</span>
                     <span class="font-medium text-gray-700">{{ $purchaseOrder->outlet->nama_outlet ?? '-' }}</span>
                 </div>
+                @endif
                 <div class="flex justify-between items-center">
                     <span class="text-gray-500">Status</span>
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
@@ -117,14 +131,35 @@
                         @php
                             $subtotal = $item->qty * $item->barang->harga_jual;
                             $total += $subtotal;
+                            // Perubahan 4 — format qty+satuan: "10 Kg" bukan "10.000"
+                            $qtyVal = (float)$item->qty;
+                            $qtyFormatted = (fmod($qtyVal, 1) == 0)
+                                ? (int)$qtyVal
+                                : number_format($qtyVal, 1, '.', '');
+                            $qtyDisplay = $qtyFormatted . ' ' . $item->barang->satuan;
+                            // Perubahan 3 — cek margin
+                            $hargaBeli = $item->barang->hargaBelis()->orderByDesc('tanggal')->first();
+                            $marginNegatif = $hargaBeli && ($hargaBeli->harga_beli > $item->barang->harga_jual);
+                            $marginPct = ($hargaBeli && $item->barang->harga_jual > 0)
+                                ? (($item->barang->harga_jual - $hargaBeli->harga_beli) / $item->barang->harga_jual) * 100
+                                : null;
                         @endphp
                         <tr>
                             <td class="px-6 py-4">
                                 <p class="font-medium text-gray-900">{{ $item->barang->nama }}</p>
-                                <p class="text-xs text-gray-400">{{ $item->barang->satuan }}</p>
+                                @if($marginNegatif)
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full mt-1">
+                                        ⚠️ Margin negatif ({{ number_format($marginPct, 1) }}%)
+                                    </span>
+                                @elseif($marginPct !== null && $marginPct < 25)
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full mt-1">
+                                        ⚠️ Margin rendah ({{ number_format($marginPct, 1) }}%)
+                                    </span>
+                                @endif
                             </td>
+                            {{-- Perubahan 4: format qty "10 Kg" bukan "10.000" --}}
                             <td class="px-6 py-4 text-right font-semibold text-gray-900">
-                                {{ number_format($item->qty, 3) }}
+                                {{ $qtyDisplay }}
                             </td>
                             <td class="px-6 py-4 text-right text-gray-600 hidden sm:table-cell">
                                 Rp {{ number_format($item->barang->harga_jual, 0, ',', '.') }}

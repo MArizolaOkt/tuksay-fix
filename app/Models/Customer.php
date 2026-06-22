@@ -10,13 +10,25 @@ class Customer extends Model
     protected $fillable = [
         'nama',
         'nama_perusahaan',
+        'tipe',
         'alamat',
         'payment_method',
     ];
 
     protected $casts = [
         'payment_method' => 'string',
+        'tipe'           => 'string',
     ];
+
+    public function isResto(): bool
+    {
+        return $this->tipe === 'resto';
+    }
+
+    public function isCatering(): bool
+    {
+        return $this->tipe === 'catering';
+    }
 
     public function outlets(): HasMany
     {

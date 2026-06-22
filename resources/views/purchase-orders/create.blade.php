@@ -24,29 +24,46 @@
             <h3 class="font-semibold text-gray-900">Detail PO</h3>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal <span class="text-red-500">*</span></label>
-                <input type="date" name="tanggal" value="{{ old('tanggal', today()->toDateString()) }}" required
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal PO <span class="text-red-500">*</span></label>
+                {{-- Tanggal PO otomatis = hari ini, tidak bisa diubah user --}}
+                <input type="text" value="{{ old('tanggal', today()->translatedFormat('d F Y')) }}" disabled
+                       class="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed">
+                <input type="hidden" name="tanggal" value="{{ old('tanggal', today()->toDateString()) }}">
+            </div>
+
+            {{-- Tanggal Kirim -- Perubahan 1 SKILL.md --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Kirim</label>
+                <input type="date" name="tanggal_kirim" value="{{ old('tanggal_kirim') }}"
                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <p class="text-xs text-gray-400 mt-1">Opsional. Jika diisi, harus ≥ Tanggal PO.</p>
+                @error('tanggal_kirim') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Customer <span class="text-red-500">*</span></label>
-                <select name="customer_id" x-model="customerId" @change="loadOutlets()" required
+                <select name="customer_id" x-model="customerId" @change="loadCustomerInfo()" required
                         class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="">Pilih customer...</option>
                     @foreach($customers as $customer)
                         <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                            {{ $customer->nama }}
+                            {{ $customer->nama }} ({{ ucfirst($customer->tipe) }})
                         </option>
                     @endforeach
                 </select>
                 @error('customer_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <div>
+            {{-- Outlet: hanya untuk customer Resto --}}
+            <div x-show="customerTipe === 'resto'"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Outlet <span class="text-red-500">*</span></label>
-                <select name="customer_outlet_id" required :disabled="outlets.length === 0"
+                <select name="customer_outlet_id" :required="customerTipe === 'resto'" :disabled="outlets.length === 0"
                         class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-50 disabled:text-gray-400">
                     <option value="">Pilih outlet...</option>
                     <template x-for="outlet in outlets" :key="outlet.id">
@@ -54,6 +71,26 @@
                     </template>
                 </select>
                 @error('customer_outlet_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Nama Event: hanya untuk customer Catering --}}
+            <div x-show="customerTipe === 'catering'"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Nama Event / Acara <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="nama_event" x-model="namaEvent"
+                       :required="customerTipe === 'catering'"
+                       value="{{ old('nama_event') }}"
+                       class="w-full px-4 py-2.5 border border-purple-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 @error('nama_event') border-red-300 @enderror"
+                       placeholder="cth: Pernikahan Budi & Ani, 21 Juni 2026">
+                <p class="text-xs text-purple-500 mt-1">Nama event unik untuk PO ini</p>
+                @error('nama_event') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
@@ -76,6 +113,12 @@
                     <span class="text-emerald-700">Est. Nilai PO</span>
                     <span class="font-semibold text-emerald-900" x-text="'Rp ' + formatNumber(totalNilai)">Rp 0</span>
                 </div>
+                <template x-if="customerTipe === 'catering' && namaEvent">
+                    <div class="flex justify-between pt-1 border-t border-emerald-200">
+                        <span class="text-purple-600 font-medium">Event</span>
+                        <span class="font-semibold text-purple-800 text-right max-w-32 truncate" x-text="namaEvent"></span>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -115,10 +158,12 @@
                         <div class="w-28">
                             <label class="block text-xs text-gray-500 mb-1">Qty</label>
                             <input type="number" :name="`items[${index}][qty]`" x-model="item.qty"
-                                   @input="calcTotal()"
-                                   min="0.001" step="0.001" required
+                                   @input="calcTotal(); checkMarginGlobal(items)"
+                                   :min="item.isDecimal ? '0.1' : '1'"
+                                   :step="item.isDecimal ? '0.1' : '1'"
+                                   required
                                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                   placeholder="0">
+                                   :placeholder="item.isDecimal ? '0.0' : '0'">
                         </div>
                         <div class="w-24 text-right">
                             <label class="block text-xs text-gray-500 mb-1">Satuan</label>
@@ -164,30 +209,79 @@
     </a>
 </div>
 
+{{-- Margin Warning — Perubahan 3 SKILL.md --}}
+<div id="margin-warning" class="rounded-xl px-4 py-3 text-sm" style="display:none;" role="alert"></div>
+
 </form>
 
 @push('scripts')
 <script>
+// Perubahan 3 — SKILL.md: data harga beli terakhir per barang
+const hargaBeliMap = {
+@foreach($barangs as $barang)
+    '{{ $barang->id }}': {
+        hargaBeli: {{ $barang->hargaBelis->last()?->harga_beli ?? 0 }},
+        hargaJual: {{ $barang->harga_jual }}
+    },
+@endforeach
+};
+
+function hitungMarginKotor(hargaBeli, hargaJual) {
+    if (!hargaJual || hargaJual <= 0) return null;
+    return ((hargaJual - hargaBeli) / hargaJual) * 100;
+}
+
+function checkMarginGlobal(items) {
+    const warningEl = document.getElementById('margin-warning');
+    if (!warningEl) return;
+    let warnings = [];
+    items.forEach(item => {
+        if (!item.barang_id) return;
+        const d = hargaBeliMap[item.barang_id];
+        if (!d || !d.hargaBeli) return;
+        const margin = hitungMarginKotor(d.hargaBeli, d.hargaJual);
+        if (margin !== null && (d.hargaBeli > d.hargaJual)) {
+            warnings.push(`⚠️ Harga beli lebih tinggi dari harga jual (margin negatif).`);
+        }
+    });
+    if (warnings.length > 0) {
+        warningEl.style.display = 'block';
+        warningEl.className = 'rounded-xl px-4 py-3 text-sm bg-red-50 border border-red-200 text-red-800';
+        warningEl.innerHTML = warnings.join('<br>');
+    } else {
+        warningEl.style.display = 'none';
+    }
+}
+
 function poForm() {
     return {
         customerId: '{{ old('customer_id', '') }}',
+        customerTipe: '',
         outlets: [],
-        items: [{ barang_id: '', qty: '', harga: 0, satuan: '' }],
+        namaEvent: '{{ old('nama_event', '') }}',
+        items: [{ barang_id: '', qty: '', harga: 0, satuan: '', isDecimal: true }],
         totalNilai: 0,
 
         init() {
-            if (this.customerId) this.loadOutlets();
+            if (this.customerId) this.loadCustomerInfo();
         },
 
-        loadOutlets() {
-            if (!this.customerId) { this.outlets = []; return; }
+        loadCustomerInfo() {
+            if (!this.customerId) {
+                this.customerTipe = '';
+                this.outlets = [];
+                return;
+            }
             fetch(`/customers/${this.customerId}/outlets-json`)
                 .then(r => r.json())
-                .then(data => { this.outlets = data; });
+                .then(data => {
+                    this.customerTipe = data.tipe;
+                    this.outlets = data.outlets;
+                });
         },
 
         addItem() {
-            this.items.push({ barang_id: '', qty: '', harga: 0, satuan: '' });
+            this.items.push({ barang_id: '', qty: '', harga: 0, satuan: '', isDecimal: true });
         },
 
         removeItem(index) {
@@ -196,20 +290,32 @@ function poForm() {
         },
 
         updateItemPrice(item) {
-            const select = document.querySelector(`select[x-model="item.barang_id"]`);
-            // Get price from option data attribute
-            const selects = document.querySelectorAll('select[name^="items"]');
-            selects.forEach(sel => {
-                const selectedOpt = sel.options[sel.selectedIndex];
-                if (selectedOpt && selectedOpt.dataset.harga !== undefined) {
-                    const idx = parseInt(sel.name.match(/\d+/)[0]);
-                    if (this.items[idx]) {
-                        this.items[idx].harga  = parseFloat(selectedOpt.dataset.harga) || 0;
-                        this.items[idx].satuan = selectedOpt.dataset.satuan || '';
-                    }
-                }
-            });
+            // Satuan yang bersifat desimal (per berat/volume)
+            const DECIMAL_UNITS = ['kg', 'gram', 'gr', 'liter', 'l', 'ml'];
+
+            // Cari index item yang diubah — JANGAN loop semua item
+            const index = this.items.indexOf(item);
+            if (index === -1) return;
+
+            const sel = document.querySelector(`select[name="items[${index}][barang_id]"]`);
+            if (!sel) return;
+
+            const selectedOpt = sel.options[sel.selectedIndex];
+            if (selectedOpt && selectedOpt.dataset.harga !== undefined) {
+                this.items[index].harga = parseFloat(selectedOpt.dataset.harga) || 0;
+                const satuan = selectedOpt.dataset.satuan || '';
+                this.items[index].satuan = satuan;
+
+                // Deteksi apakah satuan bersifat desimal (kg, liter, dll)
+                const isDecimal = DECIMAL_UNITS.includes(satuan.toLowerCase().trim());
+                this.items[index].isDecimal = isDecimal;
+
+                // Reset qty hanya untuk item ini saja
+                this.items[index].qty = '';
+            }
+
             this.calcTotal();
+            checkMarginGlobal(this.items);
         },
 
         calcTotal() {

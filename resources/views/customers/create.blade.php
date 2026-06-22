@@ -1,14 +1,44 @@
 <x-app-layout>
 @section('title', 'Tambah Customer')
 @section('page-title', 'Tambah Customer')
-@section('page-subtitle', 'Isi data customer baru beserta outlet')
+@section('page-subtitle', 'Isi data customer baru')
 
 <div class="max-w-2xl">
-    <form method="POST" action="{{ route('customers.store') }}" class="space-y-6">
+    <form method="POST" action="{{ route('customers.store') }}" class="space-y-6"
+          x-data="{
+              tipe: '{{ old('tipe', 'resto') }}',
+              outlets: ['']
+          }">
         @csrf
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
             <h3 class="font-semibold text-gray-900 text-base">Informasi Customer</h3>
+
+            {{-- Tipe Customer --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Customer <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="relative flex cursor-pointer">
+                        <input type="radio" name="tipe" value="resto" x-model="tipe" class="peer sr-only">
+                        <span class="w-full flex flex-col items-center gap-1.5 px-4 py-3 text-sm font-medium border-2 rounded-xl transition-all
+                                     border-gray-200 text-gray-600 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700">
+                            <span class="text-xl">🏪</span>
+                            <span>Resto</span>
+                            <span class="text-xs font-normal text-gray-400 peer-checked:text-emerald-600">Memiliki outlet</span>
+                        </span>
+                    </label>
+                    <label class="relative flex cursor-pointer">
+                        <input type="radio" name="tipe" value="catering" x-model="tipe" class="peer sr-only">
+                        <span class="w-full flex flex-col items-center gap-1.5 px-4 py-3 text-sm font-medium border-2 rounded-xl transition-all
+                                     border-gray-200 text-gray-600 peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700">
+                            <span class="text-xl">🍽️</span>
+                            <span>Catering</span>
+                            <span class="text-xs font-normal text-gray-400 peer-checked:text-purple-600">Per event/acara</span>
+                        </span>
+                    </label>
+                </div>
+                @error('tipe') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Customer <span class="text-red-500">*</span></label>
@@ -53,8 +83,15 @@
             </div>
         </div>
 
-        {{-- Outlets --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4" x-data="{ outlets: [''] }">
+        {{-- Outlets: hanya tampil jika tipe = resto --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4"
+             x-show="tipe === 'resto'"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2">
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-gray-900 text-base">Outlet / Lokasi Pengiriman</h3>
                 <button type="button" @click="outlets.push('')"
@@ -81,6 +118,24 @@
                 </div>
             </template>
             <p class="text-xs text-gray-400">Outlet kosong akan diabaikan</p>
+        </div>
+
+        {{-- Info Catering: tampil jika tipe = catering --}}
+        <div class="bg-purple-50 rounded-2xl border border-purple-100 p-5"
+             x-show="tipe === 'catering'"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl">🍽️</span>
+                <div>
+                    <p class="text-sm font-semibold text-purple-800">Customer Catering</p>
+                    <p class="text-sm text-purple-600 mt-0.5">Customer jenis Catering tidak memiliki outlet tetap. Setiap pembuatan Purchase Order, Anda akan diminta mengisi <strong>Nama Event / Acara</strong> yang berbeda-beda.</p>
+                </div>
+            </div>
         </div>
 
         <div class="flex gap-3">

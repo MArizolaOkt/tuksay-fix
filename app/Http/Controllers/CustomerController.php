@@ -29,6 +29,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'nama'            => 'required|string|max:255',
             'nama_perusahaan' => 'required|string|max:255',
+            'tipe'            => 'required|in:resto,catering',
             'alamat'          => 'required|string',
             'payment_method'  => 'required|in:CASH,TOP7,TOP14,TOP30',
             'outlets'         => 'nullable|array',
@@ -38,12 +39,13 @@ class CustomerController extends Controller
         $customer = Customer::create([
             'nama'            => $validated['nama'],
             'nama_perusahaan' => $validated['nama_perusahaan'],
+            'tipe'            => $validated['tipe'],
             'alamat'          => $validated['alamat'],
             'payment_method'  => $validated['payment_method'],
         ]);
 
-        // Create outlets if provided
-        if (!empty($validated['outlets'])) {
+        // Create outlets hanya untuk customer tipe Resto
+        if ($customer->isResto() && !empty($validated['outlets'])) {
             foreach (array_filter($validated['outlets']) as $namaOutlet) {
                 $customer->outlets()->create(['nama_outlet' => $namaOutlet]);
             }
@@ -70,6 +72,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'nama'            => 'required|string|max:255',
             'nama_perusahaan' => 'required|string|max:255',
+            'tipe'            => 'required|in:resto,catering',
             'alamat'          => 'required|string',
             'payment_method'  => 'required|in:CASH,TOP7,TOP14,TOP30',
         ]);
@@ -93,12 +96,13 @@ class CustomerController extends Controller
     }
 
     /**
-     * AJAX: get outlets by customer_id
+     * AJAX: get outlets by customer_id + tipe customer
      */
     public function outlets(Customer $customer)
     {
-        return response()->json(
-            $customer->outlets()->select('id', 'nama_outlet')->orderBy('nama_outlet')->get()
-        );
+        return response()->json([
+            'tipe'    => $customer->tipe,
+            'outlets' => $customer->outlets()->select('id', 'nama_outlet')->orderBy('nama_outlet')->get(),
+        ]);
     }
 }

@@ -16,7 +16,7 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $query = PurchaseOrder::with(['customer', 'outlet'])
-            ->orderBy('created_at', 'desc');
+            ->orderBy('tanggal', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -34,28 +34,36 @@ class PurchaseOrderController extends Controller
     public function create()
     {
         $customers = Customer::with('outlets')->orderBy('nama')->get();
-        $barangs   = Barang::orderBy('nama')->get();
+        $barangs   = Barang::with('hargaBelis')->orderBy('nama')->get(); // Perubahan 3: eager-load hargaBelis
         return view('purchase-orders.create', compact('customers', 'barangs'));
     }
 
     // CTRL-001: store - WORKFLOW-01: PO creation
     public function store(Request $request)
     {
+        // Cek tipe customer untuk validasi kondisional
+        $customer = Customer::find($request->customer_id);
+        $isResto  = $customer && $customer->isResto();
+
         $request->validate([
             'customer_id'        => 'required|exists:customers,id',
-            'customer_outlet_id' => 'required|exists:customer_outlets,id',
+            'customer_outlet_id' => $isResto ? 'required|exists:customer_outlets,id' : 'nullable',
+            'nama_event'         => !$isResto ? 'required|string|max:255' : 'nullable|string|max:255',
             'tanggal'            => 'required|date',
+            'tanggal_kirim'      => 'nullable|date|after_or_equal:tanggal', // Perubahan 1 — SKILL.md
             'no_ref'             => 'nullable|string|max:100',
             'items'              => 'required|array|min:1',
             'items.*.barang_id'  => 'required|exists:barangs,id',
-            'items.*.qty'        => 'required|numeric|min:0.001',
+            'items.*.qty'        => 'required|numeric|min:0.1',
         ]);
 
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $isResto) {
             $po = PurchaseOrder::create([
                 'customer_id'        => $request->customer_id,
-                'customer_outlet_id' => $request->customer_outlet_id,
+                'customer_outlet_id' => $isResto ? $request->customer_outlet_id : null,
+                'nama_event'         => !$isResto ? $request->nama_event : null,
                 'tanggal'            => $request->tanggal,
+                'tanggal_kirim'      => $request->tanggal_kirim ?: null, // Perubahan 1 — SKILL.md
                 'no_ref'             => $request->no_ref,
                 'status'             => 'baru',
             ]);
@@ -78,7 +86,7 @@ class PurchaseOrderController extends Controller
     // CTRL-001: show - Detail
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load(['customer', 'outlet', 'items.barang']);
+        $purchaseOrder->load(['customer', 'outlet', 'items.barang.hargaBelis']); // hargaBelis: Perubahan 3
         return view('purchase-orders.show', compact('purchaseOrder'));
     }
 
@@ -91,28 +99,36 @@ class PurchaseOrderController extends Controller
         }
         $purchaseOrder->load(['items.barang']);
         $customers = Customer::with('outlets')->orderBy('nama')->get();
-        $barangs   = Barang::orderBy('nama')->get();
+        $barangs   = Barang::with('hargaBelis')->orderBy('nama')->get(); // Perubahan 3: eager-load hargaBelis
         return view('purchase-orders.edit', compact('purchaseOrder', 'customers', 'barangs'));
     }
 
     // CTRL-001: update
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
+        // Cek tipe customer untuk validasi kondisional
+        $customer = Customer::find($request->customer_id);
+        $isResto  = $customer && $customer->isResto();
+
         $request->validate([
             'customer_id'        => 'required|exists:customers,id',
-            'customer_outlet_id' => 'required|exists:customer_outlets,id',
+            'customer_outlet_id' => $isResto ? 'required|exists:customer_outlets,id' : 'nullable',
+            'nama_event'         => !$isResto ? 'required|string|max:255' : 'nullable|string|max:255',
             'tanggal'            => 'required|date',
+            'tanggal_kirim'      => 'nullable|date|after_or_equal:tanggal', // Perubahan 1 — SKILL.md
             'no_ref'             => 'nullable|string|max:100',
             'items'              => 'required|array|min:1',
             'items.*.barang_id'  => 'required|exists:barangs,id',
             'items.*.qty'        => 'required|numeric|min:0.001',
         ]);
 
-        DB::transaction(function () use ($request, $purchaseOrder) {
+        DB::transaction(function () use ($request, $purchaseOrder, $isResto) {
             $purchaseOrder->update([
                 'customer_id'        => $request->customer_id,
-                'customer_outlet_id' => $request->customer_outlet_id,
+                'customer_outlet_id' => $isResto ? $request->customer_outlet_id : null,
+                'nama_event'         => !$isResto ? $request->nama_event : null,
                 'tanggal'            => $request->tanggal,
+                'tanggal_kirim'      => $request->tanggal_kirim ?: null, // Perubahan 1 — SKILL.md
                 'no_ref'             => $request->no_ref,
             ]);
 

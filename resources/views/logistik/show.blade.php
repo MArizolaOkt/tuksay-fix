@@ -45,7 +45,7 @@
     <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-50">
-                <h3 class="font-semibold text-gray-900">Detail Item (dari PO)</h3>
+                <h3 class="font-semibold text-gray-900">Detail Item (Dari Purchase Order)</h3>
             </div>
             @foreach($pos as $po)
                 <div class="px-6 py-3 bg-emerald-50/30 border-b border-gray-50">

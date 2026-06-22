@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerOutletController;
 use App\Http\Controllers\BarangController;
-use App\Http\Controllers\BiayaOperasionalController;
+// BiayaOperasionalController dihapus (Perubahan 5 — SKILL.md)
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\BelanjaController;
 use App\Http\Controllers\LogistikController;
@@ -44,10 +44,7 @@ Route::middleware('auth')->group(function () {
     // ─── Master Data: Barangs ───────────────────────────────────────
     Route::resource('barangs', BarangController::class)->except(['show']);
 
-    // ─── Master Data: Biaya Operasional ────────────────────────────
-    Route::resource('biaya-operasional', BiayaOperasionalController::class)
-        ->except(['show'])
-        ->parameters(['biaya-operasional' => 'biayaOperasional']);
+    // ─── Master Data: Biaya Operasional (DIHAPUS — SKILL.md Perubahan 5) ────
 
     // ─── Purchase Orders ────────────────────────────────────────────
     Route::resource('purchase-orders', PurchaseOrderController::class);
