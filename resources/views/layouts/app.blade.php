@@ -55,7 +55,9 @@
 
         {{-- Navigation --}}
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-            {{-- Dashboard --}}
+
+            @if(Auth::user()->isAdmin())
+            {{-- Dashboard (Admin only) --}}
             <a href="{{ route('dashboard') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('dashboard') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -66,7 +68,7 @@
                 Dashboard
             </a>
 
-            {{-- Purchase Orders --}}
+            {{-- Purchase Orders (Admin only) --}}
             <a href="{{ route('purchase-orders.index') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('purchase-orders.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -76,19 +78,50 @@
                 </svg>
                 Purchase Orders
             </a>
+            @endif
 
-            {{-- Belanja --}}
+            {{-- Belanja — tampil untuk semua role --}}
+            @if(Auth::user()->isAdmin())
+            {{-- Admin: tampilkan seluruh menu Belanja dengan sub-menu --}}
+            <div x-data="{ open: {{ request()->routeIs('belanja.*') ? 'true' : 'false' }} }">
+                <button @click="open = !open"
+                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                               {{ request()->routeIs('belanja.*') ? 'bg-white/15 text-white' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span class="flex-1 text-left">Daftar Belanja</span>
+                    <svg :class="open ? 'rotate-180' : ''" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                <div x-show="open" x-transition class="mt-1 ml-5 space-y-1 border-l border-white/10 pl-3">
+                    <a href="{{ route('belanja.index') }}" class="block px-3 py-2 text-sm rounded-lg transition-all
+                       {{ request()->routeIs('belanja.index') ? 'text-white bg-white/10' : 'text-emerald-200/70 hover:text-white hover:bg-white/5' }}">
+                        Semua Daftar Belanja
+                    </a>
+                    <a href="{{ route('belanja.konsolidasi') }}" class="block px-3 py-2 text-sm rounded-lg transition-all
+                       {{ request()->routeIs('belanja.konsolidasi') ? 'text-white bg-white/10' : 'text-emerald-200/70 hover:text-white hover:bg-white/5' }}">
+                        Konsolidasi Belanja
+                    </a>
+                </div>
+            </div>
+            @else
+            {{-- Staff: hanya tampilkan link Konsolidasi Belanja --}}
             <a href="{{ route('belanja.konsolidasi') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-                      {{ request()->routeIs('belanja.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
+                      {{ request()->routeIs('belanja.konsolidasi') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
-                Belanja Harian
+                Konsolidasi Belanja
             </a>
+            @endif
 
-            {{-- Logistik --}}
+            @if(Auth::user()->isAdmin())
+            {{-- Logistik (Admin only) --}}
             <a href="{{ route('logistik.index') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('logistik.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -99,7 +132,7 @@
                 Logistik / Surat Jalan
             </a>
 
-            {{-- Invoice --}}
+            {{-- Invoice (Admin only) --}}
             <a href="{{ route('invoices.index') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('invoices.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -110,7 +143,7 @@
                 Invoice
             </a>
 
-            {{-- Finance --}}
+            {{-- Finance (Admin only) --}}
             <div x-data="{ open: {{ request()->routeIs('finance.*') ? 'true' : 'false' }} }">
                 <button @click="open = !open"
                         class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
@@ -150,7 +183,7 @@
                 <p class="text-xs text-emerald-400/50 px-3 pt-3 pb-1 font-semibold tracking-widest uppercase">Master Data</p>
             </div>
 
-            {{-- Customers --}}
+            {{-- Customers (Admin only) --}}
             <a href="{{ route('customers.index') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('customers.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -161,7 +194,7 @@
                 Customers
             </a>
 
-            {{-- Barangs --}}
+            {{-- Barangs (Admin only) --}}
             <a href="{{ route('barangs.index') }}"
                class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                       {{ request()->routeIs('barangs.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
@@ -172,7 +205,24 @@
                 Produk (Barang)
             </a>
 
+            {{-- Divider --}}
+            <div class="pt-2 pb-1">
+                <div class="h-px bg-white/10 mx-3"></div>
+                <p class="text-xs text-emerald-400/50 px-3 pt-3 pb-1 font-semibold tracking-widest uppercase">Pengaturan</p>
+            </div>
+
+            {{-- Manajemen User (Admin only) --}}
+            <a href="{{ route('users.index') }}"
+               class="sidebar-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                      {{ request()->routeIs('users.*') ? 'bg-white/15 text-white shadow-sm' : 'text-emerald-100/80 hover:bg-white/10 hover:text-white' }}">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                Manajemen User
+            </a>
             {{-- Biaya Operasional (DIHAPUS — SKILL.md Perubahan 5) --}}
+            @endif
         </nav>
 
         {{-- User Info --}}
@@ -182,7 +232,14 @@
                     {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ Auth::user()->name }}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-white text-sm font-medium truncate">{{ Auth::user()->name }}</p>
+                        @if(Auth::user()->isAdmin())
+                            <span class="flex-shrink-0 text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-300 uppercase tracking-wide">Admin</span>
+                        @else
+                            <span class="flex-shrink-0 text-xs font-semibold px-1.5 py-0.5 rounded bg-sky-400/20 text-sky-300 uppercase tracking-wide">Staff</span>
+                        @endif
+                    </div>
                     <p class="text-emerald-300/60 text-xs truncate">{{ Auth::user()->email }}</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
@@ -198,6 +255,7 @@
             </div>
         </div>
     </aside>
+
 
     {{-- ─── Main Content ───────────────────────────────────────────────── --}}
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">

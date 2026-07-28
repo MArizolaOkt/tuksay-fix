@@ -21,7 +21,21 @@
     @endif
 @endsection
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="space-y-4">
+
+    {{-- Alert: Surat Jalan belum dicetak --}}
+    @if(!$suratJalanDicetak)
+    <div class="flex items-center gap-3 px-5 py-4 bg-amber-50 border border-amber-200 rounded-2xl" id="alert-surat-jalan">
+        <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        <p class="text-sm font-medium text-amber-800">Surat jalan belum dicetak</p>
+    </div>
+    @endif
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     {{-- Info Card --}}
     <div class="lg:col-span-1 space-y-4">
@@ -69,30 +83,41 @@
                     <span class="text-gray-500">Status</span>
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
                         {{ $purchaseOrder->status === 'baru' ? 'bg-blue-50 text-blue-700' :
-                           ($purchaseOrder->status === 'proses' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700') }}">
-                        {{ ucfirst($purchaseOrder->status) }}
+                           ($purchaseOrder->status === 'proses' ? 'bg-amber-50 text-amber-700' :
+                           ($purchaseOrder->status === 'menunggu_pembayaran' ? 'bg-orange-50 text-orange-700' : 'bg-emerald-50 text-emerald-700')) }}">
+                        {{ $purchaseOrder->statusLabel() }}
                     </span>
                 </div>
             </div>
 
-            {{-- Status Update (only baru → proses adalah via SJ) --}}
+            {{-- Status Flow Info (otomatis oleh sistem) --}}
             @if($purchaseOrder->status !== 'selesai')
             <div class="mt-5 pt-4 border-t border-gray-50">
-                <p class="text-xs text-gray-400 mb-3">Ubah Status</p>
-                <form method="POST" action="{{ route('purchase-orders.status', $purchaseOrder) }}">
-                    @csrf @method('PATCH')
-                    <div class="flex gap-2">
-                        <select name="status" class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            <option value="baru" {{ $purchaseOrder->status === 'baru' ? 'selected' : '' }}>Baru</option>
-                            <option value="proses" {{ $purchaseOrder->status === 'proses' ? 'selected' : '' }}>Proses</option>
-                            <option value="selesai" {{ $purchaseOrder->status === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                        </select>
-                        <button type="submit"
-                                class="px-3 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 transition-colors">
-                            Update
-                        </button>
-                    </div>
-                </form>
+                <p class="text-xs text-gray-400 mb-2">Alur Status (otomatis)</p>
+                <div class="space-y-1.5">
+                    @php
+                        $steps = [
+                            ['status' => 'baru', 'label' => 'Baru', 'desc' => 'PO dibuat'],
+                            ['status' => 'proses', 'label' => 'Proses', 'desc' => 'Surat Jalan dibuat'],
+                            ['status' => 'menunggu_pembayaran', 'label' => 'Menunggu Pembayaran', 'desc' => 'Invoice dibuat'],
+                            ['status' => 'selesai', 'label' => 'Selesai', 'desc' => 'Pembayaran lunas'],
+                        ];
+                        $statusOrder = ['baru' => 0, 'proses' => 1, 'menunggu_pembayaran' => 2, 'selesai' => 3];
+                        $currentIdx = $statusOrder[$purchaseOrder->status] ?? 0;
+                    @endphp
+                    @foreach($steps as $i => $step)
+                        <div class="flex items-center gap-2 text-xs {{ $i <= $currentIdx ? 'text-emerald-700 font-medium' : 'text-gray-400' }}">
+                            @if($i < $currentIdx)
+                                <svg class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            @elseif($i === $currentIdx)
+                                <span class="w-3.5 h-3.5 flex items-center justify-center flex-shrink-0"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span></span>
+                            @else
+                                <span class="w-3.5 h-3.5 flex items-center justify-center flex-shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-gray-300"></span></span>
+                            @endif
+                            <span>{{ $step['label'] }} <span class="font-normal text-gray-400">— {{ $step['desc'] }}</span></span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
             @endif
         </div>
@@ -121,65 +146,32 @@
                     <tr class="bg-gray-50 border-b border-gray-100">
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Produk</th>
                         <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Qty</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Harga Jual</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
-                    @php $total = 0; @endphp
                     @foreach($purchaseOrder->items as $item)
                         @php
-                            $subtotal = $item->qty * $item->barang->harga_jual;
-                            $total += $subtotal;
                             // Perubahan 4 — format qty+satuan: "10 Kg" bukan "10.000"
                             $qtyVal = (float)$item->qty;
                             $qtyFormatted = (fmod($qtyVal, 1) == 0)
                                 ? (int)$qtyVal
                                 : number_format($qtyVal, 1, '.', '');
                             $qtyDisplay = $qtyFormatted . ' ' . $item->barang->satuan;
-                            // Perubahan 3 — cek margin
-                            $hargaBeli = $item->barang->hargaBelis()->orderByDesc('tanggal')->first();
-                            $marginNegatif = $hargaBeli && ($hargaBeli->harga_beli > $item->barang->harga_jual);
-                            $marginPct = ($hargaBeli && $item->barang->harga_jual > 0)
-                                ? (($item->barang->harga_jual - $hargaBeli->harga_beli) / $item->barang->harga_jual) * 100
-                                : null;
                         @endphp
                         <tr>
                             <td class="px-6 py-4">
                                 <p class="font-medium text-gray-900">{{ $item->barang->nama }}</p>
-                                @if($marginNegatif)
-                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full mt-1">
-                                        ⚠️ Margin negatif ({{ number_format($marginPct, 1) }}%)
-                                    </span>
-                                @elseif($marginPct !== null && $marginPct < 25)
-                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full mt-1">
-                                        ⚠️ Margin rendah ({{ number_format($marginPct, 1) }}%)
-                                    </span>
-                                @endif
                             </td>
                             {{-- Perubahan 4: format qty "10 Kg" bukan "10.000" --}}
                             <td class="px-6 py-4 text-right font-semibold text-gray-900">
                                 {{ $qtyDisplay }}
                             </td>
-                            <td class="px-6 py-4 text-right text-gray-600 hidden sm:table-cell">
-                                Rp {{ number_format($item->barang->harga_jual, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-4 text-right font-semibold text-gray-900 hidden sm:table-cell">
-                                Rp {{ number_format($subtotal, 0, ',', '.') }}
-                            </td>
                         </tr>
                     @endforeach
                 </tbody>
-                <tfoot>
-                    <tr class="bg-gray-50 border-t border-gray-200">
-                        <td colspan="3" class="px-6 py-4 text-right font-semibold text-gray-700">Total Nilai</td>
-                        <td class="px-6 py-4 text-right font-bold text-lg text-emerald-700">
-                            Rp {{ number_format($total, 0, ',', '.') }}
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
+    </div>
     </div>
 </div>
 </x-app-layout>

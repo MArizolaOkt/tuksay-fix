@@ -33,16 +33,7 @@
                 @error('satuan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Harga Jual (Rp) <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
-                    <input type="number" name="harga_jual" value="{{ old('harga_jual') }}" required min="0" step="100"
-                           class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 @error('harga_jual') border-red-300 @enderror"
-                           placeholder="0">
-                </div>
-                @error('harga_jual') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            </div>
+
         </div>
 
         <div class="flex gap-3">

@@ -74,7 +74,7 @@
         </div>
         <div class="info-box" style="text-align:right;">
             <div class="info-label">Outlet Tujuan</div>
-            <div class="info-value">{{ $suratJalan->outlet->nama_outlet ?? '-' }}</div>
+            <div class="info-value">{{ $suratJalan->outlet->nama_outlet ?? ($suratJalan->customer->isCatering() ? 'Catering / Event' : '-') }}</div>
             <div style="margin-top:12px;">
                 <div class="info-label">Tanggal Pengiriman</div>
                 <div class="info-value">{{ \Carbon\Carbon::parse($suratJalan->tanggal)->format('d F Y') }}</div>

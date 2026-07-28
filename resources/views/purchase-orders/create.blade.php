@@ -109,10 +109,6 @@
                     <span class="text-emerald-700">Jumlah item</span>
                     <span class="font-semibold text-emerald-900" x-text="items.length + ' produk'">0 produk</span>
                 </div>
-                <div class="flex justify-between">
-                    <span class="text-emerald-700">Est. Nilai PO</span>
-                    <span class="font-semibold text-emerald-900" x-text="'Rp ' + formatNumber(totalNilai)">Rp 0</span>
-                </div>
                 <template x-if="customerTipe === 'catering' && namaEvent">
                     <div class="flex justify-between pt-1 border-t border-emerald-200">
                         <span class="text-purple-600 font-medium">Event</span>
@@ -169,10 +165,7 @@
                             <label class="block text-xs text-gray-500 mb-1">Satuan</label>
                             <span class="inline-block px-2 py-2 text-xs text-gray-500 bg-gray-50 rounded-lg" x-text="item.satuan || '-'">-</span>
                         </div>
-                        <div class="w-32 text-right hidden sm:block">
-                            <label class="block text-xs text-gray-500 mb-1">Subtotal</label>
-                            <span class="text-sm font-medium text-gray-700" x-text="'Rp ' + formatNumber(item.harga * item.qty)">Rp 0</span>
-                        </div>
+
                         <div class="mt-6">
                             <button type="button" @click="removeItem(index)"
                                     class="p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50">
@@ -189,11 +182,7 @@
                 </div>
             </div>
 
-            {{-- Total Footer --}}
-            <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50 rounded-b-2xl">
-                <span class="text-sm text-gray-500">Total Nilai PO</span>
-                <span class="text-lg font-bold text-gray-900" x-text="'Rp ' + formatNumber(totalNilai)">Rp 0</span>
-            </div>
+
         </div>
     </div>
 </div>

@@ -23,24 +23,19 @@ class FinanceReportController extends Controller
         $to   = now()->endOfDay();
 
         // ANALYTICS-001: KPI
-        // Gross Revenue = SUM(qty × harga_jual) untuk PO selesai
-        $grossRevenue = DB::table('po_items')
-            ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
-            ->join('barangs', 'po_items.barang_id', '=', 'barangs.id')
-            ->where('purchase_orders.status', 'selesai')
-            ->whereBetween('purchase_orders.tanggal', [$from->toDateString(), $to->toDateString()])
-            ->sum(DB::raw('po_items.qty * barangs.harga_jual'));
-
         // COGS = SUM(qty × harga_beli) matched by barang & tanggal
         $cogs = DB::table('po_items')
             ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
             ->join('harga_belis', function ($join) {
                 $join->on('po_items.barang_id', '=', 'harga_belis.barang_id')
-                     ->on('purchase_orders.tanggal', '=', 'harga_belis.tanggal');
+                     ->on('purchase_orders.tanggal_kirim', '=', 'harga_belis.tanggal');
             })
             ->where('purchase_orders.status', 'selesai')
             ->whereBetween('purchase_orders.tanggal', [$from->toDateString(), $to->toDateString()])
             ->sum(DB::raw('po_items.qty * harga_belis.harga_beli'));
+
+        // Gross Revenue = COGS / 0.7
+        $grossRevenue = $cogs > 0 ? (float) ($cogs / 0.7) : 0;
 
         // OPEX dihapus — SKILL.md Perubahan 5
         $grossProfit  = $grossRevenue - $cogs;
@@ -54,12 +49,15 @@ class FinanceReportController extends Controller
         // Line chart: Revenue harian 30 hari terakhir
         $revenueHarian = DB::table('po_items')
             ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
-            ->join('barangs', 'po_items.barang_id', '=', 'barangs.id')
+            ->leftJoin('harga_belis', function ($join) {
+                $join->on('po_items.barang_id', '=', 'harga_belis.barang_id')
+                     ->on('purchase_orders.tanggal_kirim', '=', 'harga_belis.tanggal');
+            })
             ->where('purchase_orders.status', 'selesai')
             ->whereBetween('purchase_orders.tanggal', [$from->toDateString(), $to->toDateString()])
             ->select(
                 'purchase_orders.tanggal as tanggal',
-                DB::raw('SUM(po_items.qty * barangs.harga_jual) as revenue')
+                DB::raw('SUM(po_items.qty * COALESCE(harga_belis.harga_beli, 0) / 0.7) as revenue')
             )
             ->groupBy('purchase_orders.tanggal')
             ->orderBy('purchase_orders.tanggal')
@@ -72,9 +70,13 @@ class FinanceReportController extends Controller
         $topProduk = DB::table('po_items')
             ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
             ->join('barangs', 'po_items.barang_id', '=', 'barangs.id')
+            ->leftJoin('harga_belis', function ($join) {
+                $join->on('po_items.barang_id', '=', 'harga_belis.barang_id')
+                     ->on('purchase_orders.tanggal_kirim', '=', 'harga_belis.tanggal');
+            })
             ->where('purchase_orders.status', 'selesai')
             ->whereBetween('purchase_orders.tanggal', [$from->toDateString(), $to->toDateString()])
-            ->select('barangs.nama', DB::raw('SUM(po_items.qty * barangs.harga_jual) as revenue'))
+            ->select('barangs.nama', DB::raw('SUM(po_items.qty * COALESCE(harga_belis.harga_beli, 0) / 0.7) as revenue'))
             ->groupBy('barangs.nama')
             ->orderByDesc('revenue')
             ->limit(10)
@@ -178,24 +180,19 @@ class FinanceReportController extends Controller
         $from = "{$year}-{$mon}-01";
         $to   = Carbon::parse($from)->endOfMonth()->toDateString();
 
-        // Revenue
-        $revenue = DB::table('po_items')
-            ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
-            ->join('barangs', 'po_items.barang_id', '=', 'barangs.id')
-            ->where('purchase_orders.status', 'selesai')
-            ->whereBetween('purchase_orders.tanggal', [$from, $to])
-            ->sum(DB::raw('po_items.qty * barangs.harga_jual'));
-
         // COGS
         $cogs = DB::table('po_items')
             ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
             ->join('harga_belis', function ($join) {
                 $join->on('po_items.barang_id', '=', 'harga_belis.barang_id')
-                     ->on('purchase_orders.tanggal', '=', 'harga_belis.tanggal');
+                     ->on('purchase_orders.tanggal_kirim', '=', 'harga_belis.tanggal');
             })
             ->where('purchase_orders.status', 'selesai')
             ->whereBetween('purchase_orders.tanggal', [$from, $to])
             ->sum(DB::raw('po_items.qty * harga_belis.harga_beli'));
+
+        // Revenue
+        $revenue = $cogs > 0 ? (float) ($cogs / 0.7) : 0;
 
         // OPEX breakdown dihapus — SKILL.md Perubahan 5
         $opexBreakdown = collect();
@@ -227,13 +224,13 @@ class FinanceReportController extends Controller
                 'barangs.id',
                 'barangs.nama',
                 'barangs.satuan',
-                'barangs.harga_jual',
                 'harga_belis.harga_beli',
-                DB::raw('CASE WHEN harga_belis.harga_beli IS NOT NULL AND barangs.harga_jual > 0
-                          THEN ROUND(((barangs.harga_jual - harga_belis.harga_beli) / barangs.harga_jual) * 100, 2)
+                DB::raw('COALESCE(harga_belis.harga_beli, 0) / 0.7 as harga_jual'),
+                DB::raw('CASE WHEN harga_belis.harga_beli IS NOT NULL
+                          THEN 30.00
                           ELSE NULL END as margin_pct'),
                 DB::raw('CASE WHEN harga_belis.harga_beli IS NOT NULL
-                          THEN barangs.harga_jual - harga_belis.harga_beli
+                          THEN (COALESCE(harga_belis.harga_beli, 0) / 0.7) - harga_belis.harga_beli
                           ELSE NULL END as margin_rp')
             )
             ->orderBy('barangs.nama')

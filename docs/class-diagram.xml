@@ -1,0 +1,932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3508" pageHeight="2480" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ═══════════════════════════════════════════════
+         DIAGRAM HEADER (BLACK & WHITE STYLE)
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="diagram_title" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;UML CLASS DIAGRAM — TUKSAY ERP SYSTEM&lt;/font&gt;&lt;/b&gt;&#xa;&lt;font style=&quot;font-size: 11px;&quot;&gt;Academic Conceptual Design (Platform-Independent Representation)&lt;/font&gt;" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontSize=12;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="450" y="20" width="1100" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Layer Labels -->
+    <mxCell id="lbl_models" value="&lt;b&gt;Domain Model Layer (Entity Classes)&lt;/b&gt;" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#000000;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="20" y="80" width="380" height="25" as="geometry" />
+    </mxCell>
+    <mxCell id="lbl_ctrls" value="&lt;b&gt;Application Controller Layer (Control Classes)&lt;/b&gt;" style="text;html=1;strokeColor=#000000;fillColor=#f5f5f5;align=left;verticalAlign=middle;spacingLeft=8;fontSize=11;fontColor=#000000;rounded=0;" vertex="1" parent="1">
+      <mxGeometry x="20" y="1650" width="460" height="25" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         MODEL CLASSES (Row 1, y=120)
+         White background (#ffffff), Black borders (#000000)
+    ═══════════════════════════════════════════════ -->
+
+    <!-- 1. User -->
+    <mxCell id="cls_User" value="«Entity»&#xa;User" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="40" y="120" width="260" height="185" as="geometry" />
+    </mxCell>
+    <mxCell id="u_a" value="- id: int {PK}&#xa;- name: string&#xa;- email: string&#xa;- password: string&#xa;- remember_token: string&#xa;- email_verified_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_User">
+      <mxGeometry y="40" width="260" height="88" as="geometry" />
+    </mxCell>
+    <mxCell id="u_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_User">
+      <mxGeometry y="128" width="260" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="u_m" value="+ casts(): array" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_User">
+      <mxGeometry y="136" width="260" height="46" as="geometry" />
+    </mxCell>
+
+    <!-- 2. Customer -->
+    <mxCell id="cls_Customer" value="«Entity»&#xa;Customer" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="340" y="120" width="265" height="255" as="geometry" />
+    </mxCell>
+    <mxCell id="c_a" value="- id: int {PK}&#xa;- nama: string&#xa;- nama_perusahaan: string&#xa;- tipe: string {resto|catering}&#xa;- alamat: text&#xa;- payment_method: string {CASH|TOP7|...}&#xa;- created_at: datetime&#xa;- updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Customer">
+      <mxGeometry y="40" width="265" height="108" as="geometry" />
+    </mxCell>
+    <mxCell id="c_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_Customer">
+      <mxGeometry y="148" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="c_m" value="+ isResto(): bool&#xa;+ isCatering(): bool&#xa;+ outlets(): CustomerOutlet[*]&#xa;+ purchaseOrders(): PurchaseOrder[*]&#xa;+ invoices(): Invoice[*]&#xa;+ suratJalans(): SuratJalan[*]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Customer">
+      <mxGeometry y="156" width="265" height="95" as="geometry" />
+    </mxCell>
+
+    <!-- 3. CustomerOutlet -->
+    <mxCell id="cls_CustomerOutlet" value="«Entity»&#xa;CustomerOutlet" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="650" y="120" width="265" height="205" as="geometry" />
+    </mxCell>
+    <mxCell id="co_a" value="- id: int {PK}&#xa;- customer_id: int {FK}&#xa;- nama_outlet: string&#xa;- created_at: datetime&#xa;- updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_CustomerOutlet">
+      <mxGeometry y="40" width="265" height="72" as="geometry" />
+    </mxCell>
+    <mxCell id="co_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_CustomerOutlet">
+      <mxGeometry y="112" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="co_m" value="+ customer(): Customer&#xa;+ purchaseOrders(): PurchaseOrder[*]&#xa;+ suratJalans(): SuratJalan[*]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_CustomerOutlet">
+      <mxGeometry y="120" width="265" height="82" as="geometry" />
+    </mxCell>
+
+    <!-- 4. Barang -->
+    <mxCell id="cls_Barang" value="«Entity»&#xa;Barang" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="970" y="120" width="265" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="b_a" value="- id: int {PK}&#xa;- nama: string {unique}&#xa;- satuan: string {kg|ikat|buah|pck}&#xa;- harga_jual: decimal(15,2)&#xa;- created_at: datetime&#xa;- updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Barang">
+      <mxGeometry y="40" width="265" height="85" as="geometry" />
+    </mxCell>
+    <mxCell id="b_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_Barang">
+      <mxGeometry y="125" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="b_m" value="+ poItems(): PoItem[*]&#xa;+ hargaBelis(): HargaBeli[*]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Barang">
+      <mxGeometry y="133" width="265" height="64" as="geometry" />
+    </mxCell>
+
+    <!-- 5. HargaBeli -->
+    <mxCell id="cls_HargaBeli" value="«Entity»&#xa;HargaBeli" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1285" y="120" width="260" height="180" as="geometry" />
+    </mxCell>
+    <mxCell id="hb_a" value="- id: int {PK}&#xa;- barang_id: int {FK}&#xa;- tanggal: date&#xa;- harga_beli: decimal(15,2)&#xa;— timestamps: false" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_HargaBeli">
+      <mxGeometry y="40" width="260" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="hb_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_HargaBeli">
+      <mxGeometry y="115" width="260" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="hb_m" value="+ barang(): Barang" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_HargaBeli">
+      <mxGeometry y="123" width="260" height="54" as="geometry" />
+    </mxCell>
+
+    <!-- 6. BiayaOperasional -->
+    <mxCell id="cls_BiayaOperasional" value="«Entity»&#xa;BiayaOperasional" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1595" y="120" width="270" height="185" as="geometry" />
+    </mxCell>
+    <mxCell id="bo_a" value="- id: int {PK}&#xa;- nama_biaya: string&#xa;- kategori: string {Transport|Packaging|&#xa;    Komunikasi|Tak Terduga|Lain-lain}&#xa;- jumlah: decimal(15,2)&#xa;- tanggal: date&#xa;- created_at, updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_BiayaOperasional">
+      <mxGeometry y="40" width="270" height="108" as="geometry" />
+    </mxCell>
+    <mxCell id="bo_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_BiayaOperasional">
+      <mxGeometry y="148" width="270" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="bo_m" value="(tidak ada relasi langsung)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontStyle=2;fontColor=#000000;" vertex="1" parent="cls_BiayaOperasional">
+      <mxGeometry y="156" width="270" height="26" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         MODEL CLASSES (Row 2, y=510)
+         PurchaseOrder (Central Entity), PoItem, SuratJalan, Invoice
+    ═══════════════════════════════════════════════ -->
+
+    <!-- 7. PurchaseOrder -->
+    <mxCell id="cls_PurchaseOrder" value="«Entity»&#xa;PurchaseOrder" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="40" y="510" width="320" height="400" as="geometry" />
+    </mxCell>
+    <mxCell id="po_a" value="- id: int {PK}&#xa;- no_po: string {unique}&#xa;- no_ref: string {nullable}&#xa;- customer_id: int {FK}&#xa;- customer_outlet_id: int {FK, nullable}&#xa;- nama_event: string {nullable}&#xa;- tanggal: date&#xa;- tanggal_kirim: date {nullable}&#xa;- status: string {baru|proses|menunggu|selesai}&#xa;- created_at, updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_PurchaseOrder">
+      <mxGeometry y="40" width="320" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="po_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_PurchaseOrder">
+      <mxGeometry y="190" width="320" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="po_m" value="+ customer(): Customer&#xa;+ outlet(): CustomerOutlet&#xa;+ items(): PoItem[*]&#xa;+ invoices(): Invoice[*]&#xa;+ relatedSuratJalans(): SuratJalan[*]&#xa;+ suratJalanSudahDicetak(): bool&#xa;+ statusLabel(): string&#xa;+ hasLunasInvoice(): bool&#xa;+ canTransitionTo(newStatus: string): bool&#xa;+ statusTransitionMessage(newStatus: string): string&#xa;{static} + generateKodePO(po: PurchaseOrder): string&#xa;{static} # booted(): void" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_PurchaseOrder">
+      <mxGeometry y="198" width="320" height="198" as="geometry" />
+    </mxCell>
+
+    <!-- 8. PoItem -->
+    <mxCell id="cls_PoItem" value="«Entity»&#xa;PoItem" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="410" y="510" width="265" height="205" as="geometry" />
+    </mxCell>
+    <mxCell id="pi_a" value="- id: int {PK}&#xa;- purchase_order_id: int {FK}&#xa;- barang_id: int {FK}&#xa;- qty: decimal(10,3)&#xa;— timestamps: false" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_PoItem">
+      <mxGeometry y="40" width="265" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="pi_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_PoItem">
+      <mxGeometry y="115" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="pi_m" value="+ purchaseOrder(): PurchaseOrder&#xa;+ barang(): Barang" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_PoItem">
+      <mxGeometry y="123" width="265" height="79" as="geometry" />
+    </mxCell>
+
+    <!-- 9. SuratJalan -->
+    <mxCell id="cls_SuratJalan" value="«Entity»&#xa;SuratJalan" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="725" y="510" width="275" height="265" as="geometry" />
+    </mxCell>
+    <mxCell id="sj_a" value="- id: int {PK}&#xa;- no_sj: string {unique}&#xa;- customer_id: int {FK}&#xa;- customer_outlet_id: int {FK, nullable}&#xa;- tanggal: date&#xa;- created_at, updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_SuratJalan">
+      <mxGeometry y="40" width="275" height="95" as="geometry" />
+    </mxCell>
+    <mxCell id="sj_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_SuratJalan">
+      <mxGeometry y="135" width="275" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="sj_m" value="+ customer(): Customer&#xa;+ outlet(): CustomerOutlet&#xa;+ purchaseOrders(): PurchaseOrder[*]&#xa;{static} + generateNoSJ(customerId: int,&#xa;    tanggal: string): string&#xa;{static} # booted(): void" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_SuratJalan">
+      <mxGeometry y="143" width="275" height="118" as="geometry" />
+    </mxCell>
+
+    <!-- 10. Invoice -->
+    <mxCell id="cls_Invoice" value="«Entity»&#xa;Invoice" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1050" y="510" width="275" height="245" as="geometry" />
+    </mxCell>
+    <mxCell id="inv_a" value="- id: int {PK}&#xa;- no_invoice: string {unique}&#xa;- customer_id: int {FK}&#xa;- tanggal: date&#xa;- total_tagihan: decimal(15,2)&#xa;- status: string {terbit|lunas}&#xa;- created_at, updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Invoice">
+      <mxGeometry y="40" width="275" height="105" as="geometry" />
+    </mxCell>
+    <mxCell id="inv_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_Invoice">
+      <mxGeometry y="145" width="275" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="inv_m" value="+ customer(): Customer&#xa;+ purchaseOrders(): PurchaseOrder[*]&#xa;{static} # booted(): void" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_Invoice">
+      <mxGeometry y="153" width="275" height="88" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         MODEL CLASSES (Row 3, y=1010)
+         DaftarBelanja, DaftarBelanjaItem
+    ═══════════════════════════════════════════════ -->
+
+    <!-- 11. DaftarBelanja -->
+    <mxCell id="cls_DaftarBelanja" value="«Entity»&#xa;DaftarBelanja" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="40" y="1010" width="285" height="280" as="geometry" />
+    </mxCell>
+    <mxCell id="db_a" value="- id: int {PK}&#xa;- no_db: string {unique}&#xa;- tanggal: date&#xa;- total_modal: decimal(15,2)&#xa;- total_revenue: decimal(15,2)&#xa;- created_at, updated_at: datetime" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_DaftarBelanja">
+      <mxGeometry y="40" width="285" height="95" as="geometry" />
+    </mxCell>
+    <mxCell id="db_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_DaftarBelanja">
+      <mxGeometry y="135" width="285" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="db_m" value="+ items(): DaftarBelanjaItem[*]&#xa;+ purchaseOrders(): PurchaseOrder[*]&#xa;+ marginPersen(): float&#xa;{static} + generateKodeDB(tanggal: string): string&#xa;{static} # booted(): void" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_DaftarBelanja">
+      <mxGeometry y="143" width="285" height="133" as="geometry" />
+    </mxCell>
+
+    <!-- 12. DaftarBelanjaItem -->
+    <mxCell id="cls_DaftarBelanjaItem" value="«Entity»&#xa;DaftarBelanjaItem" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="385" y="1010" width="285" height="275" as="geometry" />
+    </mxCell>
+    <mxCell id="dbi_a" value="- id: int {PK}&#xa;- daftar_belanja_id: int {FK}&#xa;- barang_id: int {FK}&#xa;- total_qty: decimal(10,3)&#xa;- harga_beli: decimal(15,2)&#xa;- harga_jual: decimal(15,2)&#xa;- outlet_breakdown: text&#xa;— timestamps: false" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_DaftarBelanjaItem">
+      <mxGeometry y="40" width="285" height="112" as="geometry" />
+    </mxCell>
+    <mxCell id="dbi_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_DaftarBelanjaItem">
+      <mxGeometry y="152" width="285" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="dbi_m" value="+ daftarBelanja(): DaftarBelanja&#xa;+ barang(): Barang&#xa;+ totalModal(): float&#xa;+ totalRevenue(): float" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_DaftarBelanjaItem">
+      <mxGeometry y="160" width="285" height="112" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         CONTROLLER CLASSES (y=1690+)
+         Abstract Base Controller (y=1690)
+    ═══════════════════════════════════════════════ -->
+
+    <!-- Base Controller -->
+    <mxCell id="cls_Controller" value="«abstract»&#xa;Controller" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=3;fontSize=12;align=center;" vertex="1" parent="1">
+      <mxGeometry x="860" y="1690" width="220" height="85" as="geometry" />
+    </mxCell>
+    <mxCell id="ctrl_body" value="(Abstract Base Controller)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontStyle=2;fontColor=#000000;" vertex="1" parent="cls_Controller">
+      <mxGeometry y="40" width="220" height="42" as="geometry" />
+    </mxCell>
+
+    <!-- Row 1 of Controllers: y=1840 -->
+
+    <!-- DashboardController -->
+    <mxCell id="cls_DashboardController" value="«Control»&#xa;DashboardController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="40" y="1840" width="260" height="110" as="geometry" />
+    </mxCell>
+    <mxCell id="dc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_DashboardController">
+      <mxGeometry y="40" width="260" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="dc_m" value="+ index(): View" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_DashboardController">
+      <mxGeometry y="48" width="260" height="59" as="geometry" />
+    </mxCell>
+
+    <!-- CustomerController -->
+    <mxCell id="cls_CustomerController" value="«Control»&#xa;CustomerController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="345" y="1840" width="265" height="185" as="geometry" />
+    </mxCell>
+    <mxCell id="cc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_CustomerController">
+      <mxGeometry y="40" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="cc_m" value="+ index(): View&#xa;+ create(): View&#xa;+ store(request: Request): RedirectResponse&#xa;+ show(customer: Customer): View&#xa;+ edit(customer: Customer): View&#xa;+ update(request: Request, customer: Customer): RedirectResponse&#xa;+ destroy(customer: Customer): RedirectResponse&#xa;+ outlets(customer: Customer): JsonResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_CustomerController">
+      <mxGeometry y="48" width="265" height="134" as="geometry" />
+    </mxCell>
+
+    <!-- CustomerOutletController -->
+    <mxCell id="cls_CustomerOutletController" value="«Control»&#xa;CustomerOutletController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="660" y="1840" width="270" height="135" as="geometry" />
+    </mxCell>
+    <mxCell id="coc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_CustomerOutletController">
+      <mxGeometry y="40" width="270" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="coc_m" value="+ store(request: Request, customer: Customer): RedirectResponse&#xa;+ update(request: Request, customer: Customer,&#xa;    outlet: CustomerOutlet): RedirectResponse&#xa;+ destroy(customer: Customer, outlet: CustomerOutlet): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_CustomerOutletController">
+      <mxGeometry y="48" width="270" height="83" as="geometry" />
+    </mxCell>
+
+    <!-- BarangController -->
+    <mxCell id="cls_BarangController" value="«Control»&#xa;BarangController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="985" y="1840" width="260" height="160" as="geometry" />
+    </mxCell>
+    <mxCell id="bc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_BarangController">
+      <mxGeometry y="40" width="260" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="bc_m" value="+ index(): View&#xa;+ create(): View&#xa;+ store(request: Request): RedirectResponse&#xa;+ edit(barang: Barang): View&#xa;+ update(request: Request, barang: Barang): RedirectResponse&#xa;+ destroy(barang: Barang): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_BarangController">
+      <mxGeometry y="48" width="260" height="108" as="geometry" />
+    </mxCell>
+
+    <!-- PurchaseOrderController -->
+    <mxCell id="cls_PurchaseOrderController" value="«Control»&#xa;PurchaseOrderController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1300" y="1840" width="285" height="195" as="geometry" />
+    </mxCell>
+    <mxCell id="poc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_PurchaseOrderController">
+      <mxGeometry y="40" width="285" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="poc_m" value="+ index(request: Request): View&#xa;+ create(): View&#xa;+ store(request: Request): RedirectResponse&#xa;+ show(purchaseOrder: PurchaseOrder): View&#xa;+ edit(purchaseOrder: PurchaseOrder): View&#xa;+ update(request: Request, purchaseOrder: PurchaseOrder): RedirectResponse&#xa;+ updateStatus(request: Request, purchaseOrder: PurchaseOrder): RedirectResponse&#xa;+ destroy(purchaseOrder: PurchaseOrder): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_PurchaseOrderController">
+      <mxGeometry y="48" width="285" height="143" as="geometry" />
+    </mxCell>
+
+    <!-- Row 2 of Controllers: y=2080 -->
+
+    <!-- BiayaOperasionalController -->
+    <mxCell id="cls_BiayaOperasionalController" value="«Control»&#xa;BiayaOperasionalController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="40" y="2080" width="280" height="160" as="geometry" />
+    </mxCell>
+    <mxCell id="boc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_BiayaOperasionalController">
+      <mxGeometry y="40" width="280" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="boc_m" value="+ index(): View&#xa;+ create(): View&#xa;+ store(request: Request): RedirectResponse&#xa;+ edit(biayaOperasional: BiayaOperasional): View&#xa;+ update(request: Request,&#xa;    biayaOperasional: BiayaOperasional): RedirectResponse&#xa;+ destroy(biayaOperasional: BiayaOperasional): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_BiayaOperasionalController">
+      <mxGeometry y="48" width="280" height="108" as="geometry" />
+    </mxCell>
+
+    <!-- BelanjaController -->
+    <mxCell id="cls_BelanjaController" value="«Control»&#xa;BelanjaController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="370" y="2080" width="270" height="145" as="geometry" />
+    </mxCell>
+    <mxCell id="belc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_BelanjaController">
+      <mxGeometry y="40" width="270" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="belc_m" value="+ index(request: Request): View&#xa;+ show(daftarBelanja: DaftarBelanja): View&#xa;+ konsolidasi(request: Request): View&#xa;+ inputHarga(request: Request): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_BelanjaController">
+      <mxGeometry y="48" width="270" height="93" as="geometry" />
+    </mxCell>
+
+    <!-- LogistikController -->
+    <mxCell id="cls_LogistikController" value="«Control»&#xa;LogistikController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="695" y="2080" width="265" height="155" as="geometry" />
+    </mxCell>
+    <mxCell id="lc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_LogistikController">
+      <mxGeometry y="40" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="lc_m" value="+ index(request: Request): View&#xa;+ create(): View&#xa;+ generate(request: Request): RedirectResponse&#xa;+ show(suratJalan: SuratJalan): View&#xa;+ print(suratJalan: SuratJalan): View" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_LogistikController">
+      <mxGeometry y="48" width="265" height="103" as="geometry" />
+    </mxCell>
+
+    <!-- InvoiceController -->
+    <mxCell id="cls_InvoiceController" value="«Control»&#xa;InvoiceController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1015" y="2080" width="265" height="168" as="geometry" />
+    </mxCell>
+    <mxCell id="ic_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_InvoiceController">
+      <mxGeometry y="40" width="265" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="ic_m" value="+ index(request: Request): View&#xa;+ create(): View&#xa;+ generate(request: Request): RedirectResponse&#xa;+ show(invoice: Invoice): View&#xa;+ print(invoice: Invoice): View&#xa;+ markLunas(invoice: Invoice): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_InvoiceController">
+      <mxGeometry y="48" width="265" height="116" as="geometry" />
+    </mxCell>
+
+    <!-- FinanceReportController -->
+    <mxCell id="cls_FinanceReportController" value="«Control»&#xa;FinanceReportController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1340" y="2080" width="280" height="165" as="geometry" />
+    </mxCell>
+    <mxCell id="frc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_FinanceReportController">
+      <mxGeometry y="40" width="280" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="frc_m" value="+ dashboard(request: Request): View&#xa;+ priceTrend(request: Request): View&#xa;+ plReport(request: Request): View&#xa;+ marginAnalysis(request: Request): View&#xa;- getPriceAlerts(): array" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_FinanceReportController">
+      <mxGeometry y="48" width="280" height="113" as="geometry" />
+    </mxCell>
+
+    <!-- ProfileController -->
+    <mxCell id="cls_ProfileController" value="«Control»&#xa;ProfileController" style="swimlane;startSize=40;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontStyle=1;fontSize=11;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1675" y="2080" width="255" height="142" as="geometry" />
+    </mxCell>
+    <mxCell id="pc_sep" value="" style="line;strokeColor=#000000;" vertex="1" parent="cls_ProfileController">
+      <mxGeometry y="40" width="255" height="8" as="geometry" />
+    </mxCell>
+    <mxCell id="pc_m" value="+ edit(request: Request): View&#xa;+ update(request: ProfileUpdateRequest): RedirectResponse&#xa;+ destroy(request: Request): RedirectResponse" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;fontSize=10;fontColor=#000000;" vertex="1" parent="cls_ProfileController">
+      <mxGeometry y="48" width="255" height="90" as="geometry" />
+    </mxCell>
+
+
+    <!-- ═══════════════════════════════════════════════
+         UML ASSOCIATION LINES (SOLID LINES, NO CROW'S FOOT)
+         Using simple clean lines with standard multiplicity text
+    ═══════════════════════════════════════════════ -->
+
+    <!-- Customer 1 ─── 0..* CustomerOutlet -->
+    <mxCell id="rel_c_co" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Customer" target="cls_CustomerOutlet">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="rel_c_co_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_co">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_co_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_co">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_co_name" value="outlets" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=10;fontStyle=2;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_co">
+      <mxGeometry relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Customer 1 ─── 0..* PurchaseOrder -->
+    <mxCell id="rel_c_po" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Customer" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="407" y="440"/>
+          <mxPoint x="168" y="440"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_po_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_po">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_po_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_po">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Customer 1 ─── 0..* Invoice -->
+    <mxCell id="rel_c_inv" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0.1;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Customer" target="cls_Invoice">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="645" y="255"/>
+          <mxPoint x="940" y="255"/>
+          <mxPoint x="940" y="480"/>
+          <mxPoint x="1060" y="480"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_inv_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_inv">
+      <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_inv_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_inv">
+      <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Customer 1 ─── 0..* SuratJalan -->
+    <mxCell id="rel_c_sj" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.15;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Customer" target="cls_SuratJalan">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="645" y="175"/>
+          <mxPoint x="745" y="175"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_sj_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_sj">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_c_sj_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_c_sj">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- CustomerOutlet 0..1 ─── 0..* PurchaseOrder -->
+    <mxCell id="rel_co_po" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_CustomerOutlet" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="600" y="460"/>
+          <mxPoint x="264" y="460"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_co_po_ls" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_co_po">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_co_po_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_co_po">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- CustomerOutlet 0..1 ─── 0..* SuratJalan -->
+    <mxCell id="rel_co_sj" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.7;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_CustomerOutlet" target="cls_SuratJalan">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="836" y="475"/>
+          <mxPoint x="862" y="475"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_co_sj_ls" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_co_sj">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_co_sj_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_co_sj">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- PurchaseOrder 1 ─── 1..* PoItem (Composition / Aggregation represented by standard UML solid line with cardinality) -->
+    <mxCell id="rel_po_pi" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_PurchaseOrder" target="cls_PoItem">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="rel_po_pi_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_po_pi">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_po_pi_le" value="1..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_po_pi">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Barang 1 ─── 0..* PoItem -->
+    <mxCell id="rel_b_pi" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.8;entryY=0;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Barang" target="cls_PoItem">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="910" y="475"/>
+          <mxPoint x="590" y="475"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_b_pi_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_pi">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_b_pi_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_pi">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Barang 1 ─── 0..* HargaBeli -->
+    <mxCell id="rel_b_hb" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Barang" target="cls_HargaBeli">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="rel_b_hb_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_hb">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_b_hb_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_hb">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Barang 1 ─── 0..* DaftarBelanjaItem -->
+    <mxCell id="rel_b_dbi" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Barang" target="cls_DaftarBelanjaItem">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1050" y="790"/>
+          <mxPoint x="720" y="790"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_b_dbi_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_dbi">
+      <mxGeometry x="-0.85" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_b_dbi_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_b_dbi">
+      <mxGeometry x="0.85" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- DaftarBelanja 1 ─── 1..* DaftarBelanjaItem -->
+    <mxCell id="rel_db_dbi" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_DaftarBelanja" target="cls_DaftarBelanjaItem">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="rel_db_dbi_ls" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_db_dbi">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_db_dbi_le" value="1..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_db_dbi">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         DIRECT MANY-TO-MANY RELATIONSHIPS (ACADEMIC UML Standard)
+         Represented by solid line with 0..* at both ends, pivot is abstracted.
+    ═══════════════════════════════════════════════ -->
+
+    <!-- DaftarBelanja 0..* ─── 0..* PurchaseOrder -->
+    <mxCell id="rel_db_po" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_DaftarBelanja" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="-20" y="1180"/>
+          <mxPoint x="-20" y="810"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_db_po_ls" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_db_po">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_db_po_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_db_po">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_db_po_role" value="purchaseOrders" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=9;fontStyle=2;fontColor=#000000;" vertex="1" connectable="0" parent="rel_db_po">
+      <mxGeometry x="-0.3" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- Invoice 0..* ─── 0..* PurchaseOrder -->
+    <mxCell id="rel_inv_po" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=1;entryY=0.35;entryDx=0;entryDy=0;endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_Invoice" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="990" y="650"/>
+          <mxPoint x="400" y="650"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="rel_inv_po_ls" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_inv_po">
+      <mxGeometry x="-0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_inv_po_le" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" connectable="0" parent="rel_inv_po">
+      <mxGeometry x="0.82" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+    <mxCell id="rel_inv_po_role" value="purchaseOrders" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;fontSize=9;fontStyle=2;fontColor=#000000;" vertex="1" connectable="0" parent="rel_inv_po">
+      <mxGeometry x="-0.3" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         GENERALIZATION LINES: Controllers extend Controller
+         Hollow triangle arrow, solid line
+    ═══════════════════════════════════════════════ -->
+
+    <mxCell id="inh_DC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.15;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_DashboardController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="170" y="1800"/>
+          <mxPoint x="893" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="inh_DC_lbl" value="«extends»" style="edgeLabel;html=1;align=center;verticalAlign=bottom;resizable=0;points=[];fontSize=9;fontStyle=2;fontColor=#000000;" vertex="1" connectable="0" parent="inh_DC">
+      <mxGeometry x="-0.5" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_CC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_CustomerController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="477" y="1800"/>
+          <mxPoint x="926" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_COC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.45;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_CustomerOutletController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="795" y="1800"/>
+          <mxPoint x="939" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_BAC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.55;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_BarangController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1115" y="1800"/>
+          <mxPoint x="981" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_POC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.85;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_PurchaseOrderController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1442" y="1800"/>
+          <mxPoint x="1007" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_BOC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.1;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_BiayaOperasionalController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="180" y="2040"/>
+          <mxPoint x="180" y="1800"/>
+          <mxPoint x="875" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_BELC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_BelanjaController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="505" y="2040"/>
+          <mxPoint x="505" y="1800"/>
+          <mxPoint x="910" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_LC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_LogistikController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="827" y="2040"/>
+          <mxPoint x="827" y="1800"/>
+          <mxPoint x="970" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_IC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.65;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_InvoiceController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1147" y="2040"/>
+          <mxPoint x="1147" y="1800"/>
+          <mxPoint x="983" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_FRC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.9;entryY=1;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_FinanceReportController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1480" y="2040"/>
+          <mxPoint x="1480" y="1800"/>
+          <mxPoint x="1058" y="1800"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="inh_PC" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="cls_ProfileController" target="cls_Controller">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1802" y="2040"/>
+          <mxPoint x="1802" y="1732"/>
+          <mxPoint x="1080" y="1732"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         DEPENDENCY LINES: Controllers -> Models «uses»
+         Dashed open-arrow lines
+    ═══════════════════════════════════════════════ -->
+
+    <mxCell id="dep_dc_po" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.2;exitY=0;exitDx=0;exitDy=0;entryX=0.1;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_DashboardController" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="92" y="1810"/>
+          <mxPoint x="92" y="1430"/>
+          <mxPoint x="72" y="1430"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_dc_inv" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_DashboardController" target="cls_Invoice">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="248" y="1810"/>
+          <mxPoint x="248" y="1370"/>
+          <mxPoint x="1187" y="1370"/>
+          <mxPoint x="1187" y="755"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_dc_bo" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.4;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_DashboardController" target="cls_BiayaOperasional">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="300" y="1895"/>
+          <mxPoint x="300" y="1350"/>
+          <mxPoint x="1703" y="1350"/>
+          <mxPoint x="1703" y="305"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_cc_c" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.4;exitY=0;exitDx=0;exitDy=0;entryX=0.2;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_CustomerController" target="cls_Customer">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="451" y="1810"/>
+          <mxPoint x="451" y="1630"/>
+          <mxPoint x="413" y="1630"/>
+          <mxPoint x="413" y="375"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_cc_co" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_CustomerController" target="cls_CustomerOutlet">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="557" y="1810"/>
+          <mxPoint x="557" y="1610"/>
+          <mxPoint x="730" y="1610"/>
+          <mxPoint x="730" y="325"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_coc_c" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.3;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_CustomerOutletController" target="cls_Customer">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="741" y="1810"/>
+          <mxPoint x="741" y="1590"/>
+          <mxPoint x="578" y="1590"/>
+          <mxPoint x="578" y="375"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_coc_co" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_CustomerOutletController" target="cls_CustomerOutlet">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="795" y="1810"/>
+          <mxPoint x="795" y="1570"/>
+          <mxPoint x="782" y="1570"/>
+          <mxPoint x="782" y="325"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_bac_b" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_BarangController" target="cls_Barang">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1115" y="1810"/>
+          <mxPoint x="1115" y="1550"/>
+          <mxPoint x="1102" y="1550"/>
+          <mxPoint x="1102" y="320"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_poc_po" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.3;exitY=0;exitDx=0;exitDy=0;entryX=0.9;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_PurchaseOrderController" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1385" y="1810"/>
+          <mxPoint x="1385" y="1530"/>
+          <mxPoint x="328" y="1530"/>
+          <mxPoint x="328" y="910"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_poc_b" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_PurchaseOrderController" target="cls_Barang">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1442" y="1810"/>
+          <mxPoint x="1442" y="1510"/>
+          <mxPoint x="1155" y="1510"/>
+          <mxPoint x="1155" y="320"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_bc_db" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.2;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_BelanjaController" target="cls_DaftarBelanja">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="424" y="2040"/>
+          <mxPoint x="424" y="1490"/>
+          <mxPoint x="182" y="1490"/>
+          <mxPoint x="182" y="1290"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_bc_hb" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.8;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_BelanjaController" target="cls_HargaBeli">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="586" y="2040"/>
+          <mxPoint x="586" y="1470"/>
+          <mxPoint x="1415" y="1470"/>
+          <mxPoint x="1415" y="300"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_lc_sj" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_LogistikController" target="cls_SuratJalan">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="827" y="2040"/>
+          <mxPoint x="827" y="775"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_lc_po" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.2;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_LogistikController" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="748" y="2040"/>
+          <mxPoint x="748" y="1450"/>
+          <mxPoint x="296" y="1450"/>
+          <mxPoint x="296" y="910"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_ic_inv" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_InvoiceController" target="cls_Invoice">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1147" y="2040"/>
+          <mxPoint x="1147" y="755"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_ic_po" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.3;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_InvoiceController" target="cls_PurchaseOrder">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1095" y="2040"/>
+          <mxPoint x="1095" y="1430"/>
+          <mxPoint x="280" y="1430"/>
+          <mxPoint x="280" y="910"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_frc_b" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.3;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_FinanceReportController" target="cls_Barang">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1424" y="2040"/>
+          <mxPoint x="1424" y="1490"/>
+          <mxPoint x="1182" y="1490"/>
+          <mxPoint x="1182" y="320"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="dep_frc_hb" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_FinanceReportController" target="cls_HargaBeli">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1480" y="2040"/>
+          <mxPoint x="1480" y="1470"/>
+          <mxPoint x="1467" y="1470"/>
+          <mxPoint x="1467" y="300"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_boc_bo" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.3;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_BiayaOperasionalController" target="cls_BiayaOperasional">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="180" y="2040"/>
+          <mxPoint x="180" y="1410"/>
+          <mxPoint x="1676" y="1410"/>
+          <mxPoint x="1676" y="305"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="dep_pc_u" value="«uses»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.8;entryY=1;entryDx=0;entryDy=0;endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;fontSize=9;fontColor=#000000;" edge="1" parent="1" source="cls_ProfileController" target="cls_User">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1802" y="2040"/>
+          <mxPoint x="1802" y="1390"/>
+          <mxPoint x="248" y="1390"/>
+          <mxPoint x="248" y="305"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <!-- ═══════════════════════════════════════════════
+         BLACK & WHITE DIAGRAM LEGEND
+    ═══════════════════════════════════════════════ -->
+    <mxCell id="legend_bg" value="" style="rounded=0;fillColor=#ffffff;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+      <mxGeometry x="1700" y="120" width="330" height="310" as="geometry" />
+    </mxCell>
+    <mxCell id="legend_title" value="&lt;b&gt;UML NOTATION LEGEND (PRINT STYLE)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="1700" y="126" width="330" height="26" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg1" value="" style="endArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1">
+      <mxGeometry x="1715" y="167" width="1" height="1" as="geometry" relative="0">
+        <mxPoint x="1715" y="167" as="sourcePoint"/>
+        <mxPoint x="1810" y="167" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg1_l" value="Association (Multiplicity labeled)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="1818" y="158" width="205" height="18" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg3" value="" style="endArrow=block;endFill=0;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1">
+      <mxGeometry x="1715" y="198" width="1" height="1" as="geometry" relative="0">
+        <mxPoint x="1715" y="198" as="sourcePoint"/>
+        <mxPoint x="1810" y="198" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg3_l" value="Generalization «extends»" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="1818" y="189" width="205" height="18" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg4" value="" style="endArrow=open;endFill=0;strokeColor=#000000;strokeWidth=1;dashed=1;" edge="1" parent="1">
+      <mxGeometry x="1715" y="228" width="1" height="1" as="geometry" relative="0">
+        <mxPoint x="1715" y="228" as="sourcePoint"/>
+        <mxPoint x="1810" y="228" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="leg4_l" value="Dependency «uses»" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="1818" y="219" width="205" height="18" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg_mult_hdr" value="&lt;b&gt;Cardinality:&lt;/b&gt;&#xa;1 = exactly one   |   0..* = zero or more&#xa;1..* = one or more |   0..1 = optional" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="1715" y="253" width="308" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="leg_cc1" value="«Entity» Class" style="rounded=0;fillColor=#ffffff;strokeColor=#000000;fontSize=9;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1715" y="305" width="125" height="22" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_cc3" value="«Control» Class" style="rounded=0;fillColor=#ffffff;strokeColor=#000000;fontSize=9;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1850" y="305" width="125" height="22" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_cc4" value="«abstract» Class" style="rounded=0;fillColor=#ffffff;strokeColor=#000000;fontStyle=3;fontSize=9;fontColor=#000000;align=center;" vertex="1" parent="1">
+      <mxGeometry x="1715" y="335" width="125" height="22" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

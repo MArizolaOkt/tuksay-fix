@@ -73,6 +73,8 @@ class PurchaseOrder extends Model
         return $prefix . '-' . str_pad($nextSeq, 4, '0', STR_PAD_LEFT);
     }
 
+    // ─── Relasi ─────────────────────────────────────────────────────────────────
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
@@ -86,5 +88,110 @@ class PurchaseOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(PoItem::class);
+    }
+
+    public function invoices(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Invoice::class, 'invoice_purchase_orders')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Ambil query SuratJalan yang terkait dengan PO ini
+     * (match by customer_id + customer_outlet_id + tanggal)
+     */
+    public function relatedSuratJalans(): \Illuminate\Database\Eloquent\Builder
+    {
+        return SuratJalan::where('customer_id', $this->customer_id)
+            ->where(function ($q) {
+                if ($this->customer_outlet_id) {
+                    $q->where('customer_outlet_id', $this->customer_outlet_id);
+                } else {
+                    $q->whereNull('customer_outlet_id');
+                }
+            })
+            ->whereDate('tanggal', $this->tanggal);
+    }
+
+    /**
+     * Cek apakah surat jalan sudah dicetak (ada record SJ terkait).
+     */
+    public function suratJalanSudahDicetak(): bool
+    {
+        return $this->relatedSuratJalans()->exists();
+    }
+
+    /**
+     * Label status untuk ditampilkan di UI.
+     */
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            'baru'                  => 'Baru',
+            'proses'                => 'Proses',
+            'menunggu_pembayaran'   => 'Menunggu Pembayaran',
+            'selesai'               => 'Selesai',
+            default                 => ucfirst($this->status),
+        };
+    }
+
+    /**
+     * Cek apakah ada invoice lunas untuk customer ini
+     */
+    public function hasLunasInvoice(): bool
+    {
+        return Invoice::where('customer_id', $this->customer_id)
+            ->where('status', 'lunas')
+            ->exists();
+    }
+
+    // ─── Validasi Transisi Status ────────────────────────────────────────────────
+
+    /**
+     * Cek apakah status bisa diubah ke $newStatus.
+     *
+     * Aturan:
+     *  - baru  → proses  : Surat Jalan sudah dicetak/dibuat (ada SJ yang match)
+     *  - proses → selesai : Invoice sudah ada DAN sudah lunas
+     *  - Transisi lain    : tidak diizinkan
+     */
+    public function canTransitionTo(string $newStatus): bool
+    {
+        return match (true) {
+            // baru → proses: harus ada SuratJalan yang match
+            $this->status === 'baru' && $newStatus === 'proses'
+                => $this->relatedSuratJalans()->exists(),
+
+            // proses → menunggu_pembayaran: langsung boleh
+            $this->status === 'proses' && $newStatus === 'menunggu_pembayaran'
+                => true,
+
+            // menunggu_pembayaran → selesai: harus ada Invoice lunas
+            $this->status === 'menunggu_pembayaran' && $newStatus === 'selesai'
+                => $this->hasLunasInvoice(),
+
+            // Transisi lain tidak diizinkan (termasuk status sama)
+            default => false,
+        };
+    }
+
+    /**
+     * Pesan error yang ditampilkan ketika transisi status gagal.
+     */
+    public function statusTransitionMessage(string $newStatus): string
+    {
+        return match (true) {
+            $this->status === 'baru' && $newStatus === 'proses' =>
+                'Status tidak dapat diubah ke "Proses". Pastikan Surat Jalan sudah dibuat terlebih dahulu.',
+
+            $this->status === 'proses' && $newStatus === 'menunggu_pembayaran' =>
+                'Status tidak dapat diubah ke "Menunggu Pembayaran".',
+
+            $this->status === 'menunggu_pembayaran' && $newStatus === 'selesai' =>
+                'Status tidak dapat diubah ke "Selesai". Pastikan Invoice sudah dicetak dan pembayaran telah dilakukan (lunas).',
+
+            default =>
+                'Perubahan status dari "' . $this->statusLabel() . '" ke "' . ucfirst($newStatus) . '" tidak diizinkan.',
+        };
     }
 }

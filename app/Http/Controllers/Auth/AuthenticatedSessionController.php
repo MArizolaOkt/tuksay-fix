@@ -28,6 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        // Staff diarahkan ke halaman konsolidasi belanja
+        if ($user->isStaff()) {
+            return redirect()->intended(route('belanja.konsolidasi', absolute: false));
+        }
+
+        // Admin diarahkan ke dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

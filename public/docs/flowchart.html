@@ -1,0 +1,392 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flowchart Sistem TUKSAY — Fresh Produce Supplier Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f9f9f9;
+      color: #0a0a0a;
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+    }
+
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 60px; }
+    .badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase;
+      border: 1.5px solid #0a0a0a; padding: 4px 14px; margin-bottom: 16px;
+    }
+    .header h1 { font-size: clamp(22px, 3.5vw, 38px); font-weight: 700; letter-spacing: -1px; line-height: 1.1; }
+    .header p { margin-top: 10px; font-size: 14px; color: #6b6b6b; }
+    .divider { width: 60px; height: 2px; background: #0a0a0a; margin: 20px auto 0; }
+
+    /* LEGEND */
+    .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-bottom: 60px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; color: #3a3a3a; }
+    .lb { width: 28px; height: 18px; border: 2px solid #0a0a0a; flex-shrink: 0; }
+    .lb.pill { border-radius: 30px; background: #0a0a0a; }
+    .lb.dia { transform: rotate(45deg); width: 16px; height: 16px; }
+    .lb.io { clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); }
+    .lb.shade { background: #e8e8e8; }
+
+    /* CANVAS */
+    .canvas { display: flex; flex-direction: column; align-items: center; }
+
+    /* PHASE LABEL */
+    .phase {
+      font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      color: #6b6b6b; margin: 40px 0 20px; text-align: center;
+      border-bottom: 1px dashed #d0d0d0; padding-bottom: 10px; width: 100%; max-width: 760px;
+    }
+
+    /* SHAPES */
+    .section { width: 100%; max-width: 760px; display: flex; flex-direction: column; align-items: center; }
+
+    .shape {
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; font-size: 12px; font-weight: 500; line-height: 1.4;
+      padding: 10px 20px; transition: transform .15s ease;
+    }
+    .shape:hover { transform: translateY(-2px); }
+
+    .terminal {
+      border-radius: 50px; border: 2.5px solid #0a0a0a;
+      background: #0a0a0a; color: #f9f9f9;
+      min-width: 140px; font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    }
+    .process {
+      border: 2px solid #0a0a0a; background: #f9f9f9;
+      min-width: 240px; max-width: 280px;
+    }
+    .process.dark { background: #0a0a0a; color: #f9f9f9; }
+    .process.shade { background: #eaeaea; }
+    .io-shape {
+      border: 2px solid #0a0a0a; background: #f9f9f9;
+      min-width: 240px; max-width: 280px;
+      clip-path: polygon(14px 0%, 100% 0%, calc(100% - 14px) 100%, 0% 100%);
+      padding: 10px 30px;
+    }
+
+    /* DIAMOND */
+    .dia-wrap {
+      width: 210px; height: 96px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dia-wrap::before {
+      content: ''; position: absolute; inset: 4px;
+      background: #f9f9f9; border: 2px solid #0a0a0a;
+      transform: rotate(45deg); transition: transform .15s;
+    }
+    .dia-wrap:hover::before { transform: rotate(45deg) scale(1.04); }
+    .dia-wrap span { position: relative; z-index: 1; font-size: 11px; font-weight: 600; max-width: 120px; }
+
+    /* ARROW */
+    .arr { display: flex; flex-direction: column; align-items: center; }
+    .arr .line { width: 2px; background: #0a0a0a; }
+    .arr .head { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 10px solid #0a0a0a; }
+
+    /* BRANCH */
+    .branch-area { position: relative; }
+    .h-line { height: 2px; background: #0a0a0a; position: absolute; top: 0; }
+
+    /* ANNOTATION */
+    .note { font-size: 10px; color: #6b6b6b; font-style: italic; margin: 4px 0; text-align: center; }
+
+    /* MINI LIST */
+    .ml { font-size: 10px; text-align: left; color: #3a3a3a; margin-top: 6px; line-height: 1.7; }
+    .ml li { list-style: none; padding-left: 10px; position: relative; }
+    .ml li::before { content: '–'; position: absolute; left: 0; color: #aaa; }
+
+    /* STATUS BAR */
+    .status-bar { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 32px; }
+    .sbox { border: 2px solid #0a0a0a; padding: 8px 22px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .sbox.active { background: #eaeaea; }
+    .sbox.done { background: #0a0a0a; color: #f9f9f9; }
+    .sarrow { display: flex; align-items: center; }
+    .sarrow .sl { width: 36px; height: 2px; background: #0a0a0a; }
+    .sarrow .sh { width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid #0a0a0a; }
+
+    @media print {
+      body { padding: 20px; background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="badge">System Flowchart</div>
+  <h1>TUKSAY<br>Fresh Produce Supplier Management System</h1>
+  <p>Alur proses sistem dari autentikasi hingga pelaporan keuangan — Laravel 12 + MySQL 8</p>
+  <div class="divider"></div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="lb pill"></div> Terminal (Start/End)</div>
+  <div class="legend-item"><div class="lb"></div> Proses</div>
+  <div class="legend-item"><div class="lb dia"></div> Keputusan</div>
+  <div class="legend-item"><div class="lb io"></div> Input / Output</div>
+  <div class="legend-item"><div class="lb shade"></div> Proses Sistem Otomatis</div>
+</div>
+
+<!-- ===== FLOWCHART ===== -->
+<div class="canvas">
+
+  <!-- START -->
+  <div class="shape terminal">&#9654; MULAI</div>
+  <div class="arr"><div class="line" style="height:28px"></div><div class="head"></div></div>
+
+  <!-- PHASE 0: AUTH -->
+  <div class="phase">FASE 0 — Autentikasi Pengguna</div>
+  <div class="section">
+
+    <div class="shape process">Akses Aplikasi Web<br><small style="color:#6b6b6b;font-size:10px">Browser membuka URL aplikasi TUKSAY</small></div>
+    <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+
+    <div class="dia-wrap"><span>Sudah<br>Login?</span></div>
+
+    <!-- branch decision -->
+    <div style="display:flex;width:380px;position:relative;height:2px;background:#0a0a0a;margin:0 auto;"></div>
+    <div style="display:flex;gap:100px;align-items:flex-start;">
+      <!-- YA -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:8px;">YA</div>
+        <div class="shape process" style="min-width:150px;max-width:160px;font-size:11px;text-align:center;">Redirect ke<br>Dashboard Utama</div>
+      </div>
+      <!-- TIDAK -->
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:8px;">TIDAK</div>
+        <div class="shape io-shape" style="min-width:150px;max-width:165px;font-size:11px;text-align:center;padding:10px 24px;">Form Login<br><span style="font-size:10px;color:#6b6b6b">email + password</span></div>
+        <div class="arr"><div class="line" style="height:16px"></div><div class="head"></div></div>
+        <div class="shape process shade" style="min-width:150px;max-width:165px;font-size:11px;text-align:center;">Validasi Kredensial<br><span style="font-size:10px;color:#6b6b6b">Laravel Breeze / Sanctum</span></div>
+        <div class="arr"><div class="line" style="height:16px"></div><div class="head"></div></div>
+        <div class="shape process" style="min-width:150px;max-width:165px;font-size:11px;text-align:center;">Buat Session &amp;<br>Redirect Dashboard</div>
+      </div>
+    </div>
+
+    <div class="arr" style="margin-top:16px;"><div class="line" style="height:24px"></div><div class="head"></div></div>
+
+    <div class="shape process dark">Dashboard Utama</div>
+    <div class="arr"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 1: MASTER DATA -->
+  <div class="phase">FASE 1 — Setup Master Data</div>
+  <div class="section">
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;">
+      <div class="shape process" style="min-width:165px;max-width:175px;font-size:11px;text-align:center;">
+        <strong>Master Pelanggan</strong>
+        <ul class="ml"><li>Nama &amp; Perusahaan</li><li>Metode Pembayaran</li><li>Data Outlet</li></ul>
+      </div>
+      <div class="shape process" style="min-width:165px;max-width:175px;font-size:11px;text-align:center;">
+        <strong>Master Barang</strong>
+        <ul class="ml"><li>Nama Produk</li><li>Satuan (kg/ikat/buah/pck)</li><li>Harga Jual</li></ul>
+      </div>
+      <div class="shape process" style="min-width:165px;max-width:175px;font-size:11px;text-align:center;">
+        <strong>Biaya Operasional</strong>
+        <ul class="ml"><li>Transport</li><li>Packaging</li><li>Komunikasi</li><li>Lain-lain</li></ul>
+      </div>
+    </div>
+    <div class="arr" style="margin-top:16px;"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 2: PURCHASE ORDER -->
+  <div class="phase">FASE 2 — Purchase Order (PO)</div>
+  <div class="section">
+
+    <div class="shape io-shape">Input Order dari Pelanggan<br><small style="font-size:10px;color:#6b6b6b">Customer, Outlet, Tanggal, Item, Qty</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process shade">Generate Nomor PO Otomatis<br><small style="font-size:10px;color:#555">Format: PO-000001 (zero-padded 6 digit)</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process">Simpan PO + Item<br><small style="font-size:10px;color:#6b6b6b">Status: <strong>BARU</strong> | Qty decimal diizinkan (0.5, 1.25 ...)</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="dia-wrap"><span>Perlu Edit<br>PO?</span></div>
+    <div style="display:flex;width:340px;position:relative;height:2px;background:#0a0a0a;margin:0 auto;"></div>
+    <div style="display:flex;gap:80px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">YA</div>
+        <div class="shape process" style="min-width:140px;max-width:155px;font-size:11px;text-align:center;">Edit / Hapus PO<br><small style="font-size:10px;color:#6b6b6b">&#8634; kembali ke form</small></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">TIDAK</div>
+        <div class="shape process" style="min-width:140px;max-width:155px;font-size:11px;text-align:center;">PO Aktif<br><small style="font-size:10px;color:#6b6b6b">Tampil di daftar order</small></div>
+      </div>
+    </div>
+    <div class="arr" style="margin-top:16px;"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 3: BELANJA -->
+  <div class="phase">FASE 3 — Konsolidasi &amp; Belanja Harian</div>
+  <div class="section">
+
+    <div class="shape process shade">Konsolidasi Daftar Belanja<br><small style="font-size:10px;color:#555">Agregat qty semua PO status BARU/PROSES<br>Dikelompok per produk + breakdown per outlet</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process">Cetak / Lihat Daftar Belanja<br><small style="font-size:10px;color:#6b6b6b">Dibawa ke pasar — beli sesuai qty konsolidasi</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape io-shape">Input Harga Beli Pasar<br><small style="font-size:10px;color:#6b6b6b">harga_beli per barang per tanggal (updateOrCreate)</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process shade">Hitung Total Modal Pembelian<br><small style="font-size:10px;color:#555">&#931; (qty &#215; harga_beli) per produk — tampil realtime</small></div>
+    <div class="arr"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 4: LOGISTIK -->
+  <div class="phase">FASE 4 — Logistik / Surat Jalan (SJ)</div>
+  <div class="section">
+
+    <div class="shape process shade">Buat Surat Jalan<br><small style="font-size:10px;color:#555">Dikelompok per: customer_id + customer_outlet_id</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process shade">Generate Nomor SJ Otomatis<br><small style="font-size:10px;color:#555">Format: SJ-000001 | Update PO: BARU &#8594; PROSES</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="dia-wrap"><span>Tampilkan<br>Harga Jual<br>di SJ?</span></div>
+    <div style="display:flex;width:320px;position:relative;height:2px;background:#0a0a0a;margin:0 auto;"></div>
+    <div style="display:flex;gap:60px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">YA</div>
+        <div class="shape process" style="min-width:130px;max-width:145px;font-size:11px;text-align:center;">Tampilkan Harga<br>di Kolom SJ</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">TIDAK</div>
+        <div class="shape process" style="min-width:130px;max-width:145px;font-size:11px;text-align:center;">Sembunyikan<br>Kolom Harga</div>
+      </div>
+    </div>
+
+    <div class="arr" style="margin-top:16px;"><div class="line" style="height:16px"></div><div class="head"></div></div>
+    <div class="shape process">Cetak Surat Jalan (A4)<br><small style="font-size:10px;color:#6b6b6b">@media print — sidebar/nav otomatis disembunyikan</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+    <div class="shape process shade">Antar ke Outlet Pelanggan<br><small style="font-size:10px;color:#555">Pengiriman hari yang sama dengan pembelian pasar</small></div>
+    <div class="arr"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 5: INVOICE -->
+  <div class="phase">FASE 5 — Penagihan (Invoice)</div>
+  <div class="section">
+
+    <div class="dia-wrap"><span>Periode<br>Tagihan?</span></div>
+    <div style="display:flex;width:280px;position:relative;height:2px;background:#0a0a0a;margin:0 auto;"></div>
+    <div style="display:flex;gap:60px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;">Mingguan (TOP7)</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;">Bulanan (TOP14/30)</div>
+      </div>
+    </div>
+    <div class="note" style="margin:8px 0;">&#8595; Keduanya menuju alur yang sama</div>
+
+    <div class="arr"><div class="line" style="height:10px"></div><div class="head"></div></div>
+    <div class="shape process shade">Generate Invoice per Pelanggan<br><small style="font-size:10px;color:#555">Sumber: PO status PROSES, dikelompok per customer_id</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process shade">Hitung Total Tagihan<br><small style="font-size:10px;color:#555">&#931; (qty &#215; harga_jual) | Generate no_invoice: INV-000001</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process">Simpan Invoice &amp; Update Status PO<br><small style="font-size:10px;color:#6b6b6b">Invoice: <strong>TERBIT</strong> | PO: PROSES &#8594; <strong>SELESAI</strong></small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="shape process">Kirim / Cetak Invoice (A4)<br><small style="font-size:10px;color:#6b6b6b">ke Pelanggan</small></div>
+    <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+
+    <div class="dia-wrap"><span>Pelanggan<br>Melunasi?</span></div>
+    <div style="display:flex;width:320px;position:relative;height:2px;background:#0a0a0a;margin:0 auto;"></div>
+    <div style="display:flex;gap:60px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">YA</div>
+        <div class="shape process" style="min-width:130px;max-width:145px;font-size:11px;text-align:center;">Tandai LUNAS<br><small style="font-size:10px;color:#6b6b6b">PATCH /invoices/lunas</small></div>
+        <div class="arr"><div class="line" style="height:14px"></div><div class="head"></div></div>
+        <div class="shape process shade" style="min-width:130px;max-width:145px;font-size:11px;text-align:center;">Status Invoice<br>TERBIT &#8594; <strong>LUNAS</strong></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="arr"><div class="line" style="height:18px"></div><div class="head"></div></div>
+        <div style="font-size:9px;font-weight:700;color:#6b6b6b;margin-bottom:6px;">TIDAK</div>
+        <div class="shape process" style="min-width:130px;max-width:145px;font-size:11px;text-align:center;">Tunggu Jatuh<br>Tempo TOP</div>
+      </div>
+    </div>
+    <div class="arr" style="margin-top:16px;"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- PHASE 6: LAPORAN KEUANGAN -->
+  <div class="phase">FASE 6 — Laporan Keuangan &amp; Analitik (Phase 2)</div>
+  <div class="section">
+
+    <div class="shape process dark">Finance Dashboard</div>
+    <div class="arr"><div class="line" style="height:20px"></div><div class="head"></div></div>
+
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
+      <div class="shape process" style="min-width:155px;max-width:165px;font-size:11px;text-align:center;">
+        <strong>KPI Dashboard</strong>
+        <ul class="ml"><li>Gross Revenue</li><li>COGS</li><li>Gross Profit</li><li>Margin %</li><li>BEP Harian</li></ul>
+      </div>
+      <div class="shape process" style="min-width:155px;max-width:165px;font-size:11px;text-align:center;">
+        <strong>Laporan P&amp;L</strong>
+        <ul class="ml"><li>Revenue</li><li>COGS</li><li>Gross Profit</li><li>OPEX per kategori</li><li>Net Profit &amp; Margin</li></ul>
+      </div>
+      <div class="shape process" style="min-width:155px;max-width:165px;font-size:11px;text-align:center;">
+        <strong>Tren Harga Beli</strong>
+        <ul class="ml"><li>Volatilitas 4–12 minggu</li><li>Alert kenaikan &gt;10%</li><li>Margin &lt; 25% warning</li></ul>
+      </div>
+      <div class="shape process" style="min-width:155px;max-width:165px;font-size:11px;text-align:center;">
+        <strong>Analisis Margin</strong>
+        <ul class="ml"><li>Margin per produk</li><li>Top 5 produk terlaris</li><li>Revenue per pelanggan</li></ul>
+      </div>
+    </div>
+
+    <div class="arr" style="margin-top:20px;"><div class="line" style="height:24px"></div><div class="head"></div></div>
+  </div>
+
+  <!-- END -->
+  <div class="shape terminal">&#9632; SELESAI</div>
+
+  <!-- STATUS FLOW -->
+  <div style="margin-top:64px;text-align:center;width:100%;max-width:760px;">
+    <div class="badge" style="margin-bottom:20px;">Alur Status Purchase Order</div>
+    <div class="status-bar">
+      <div class="sbox">BARU</div>
+      <div class="sarrow"><div class="sl"></div><div style="font-size:9px;color:#6b6b6b;margin:0 4px;white-space:nowrap;position:relative;top:-14px;">Surat Jalan</div><div class="sh"></div></div>
+      <div class="sbox active">PROSES</div>
+      <div class="sarrow"><div class="sl"></div><div style="font-size:9px;color:#6b6b6b;margin:0 4px;white-space:nowrap;position:relative;top:-14px;">Invoice</div><div class="sh"></div></div>
+      <div class="sbox done">SELESAI</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px;text-align:center;width:100%;max-width:760px;margin-bottom:20px;">
+    <div class="badge" style="margin-bottom:20px;">Alur Status Invoice</div>
+    <div class="status-bar">
+      <div class="sbox">TERBIT</div>
+      <div class="sarrow"><div class="sl"></div><div style="font-size:9px;color:#6b6b6b;margin:0 4px;white-space:nowrap;position:relative;top:-14px;">Bayar</div><div class="sh"></div></div>
+      <div class="sbox done">LUNAS</div>
+    </div>
+  </div>
+
+</div><!-- /canvas -->
+
+<div style="text-align:center;margin-top:60px;padding-top:20px;border-top:1px solid #e0e0e0;">
+  <p style="font-size:11px;color:#aaa;letter-spacing:1px;">TUKSAY ERP &nbsp;&#183;&nbsp; Fresh Produce Supplier Management System &nbsp;&#183;&nbsp; Laravel 12 + MySQL 8</p>
+</div>
+
+</body>
+</html>

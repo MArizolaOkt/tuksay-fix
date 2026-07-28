@@ -25,8 +25,8 @@ class BarangController extends Controller
         $validated = $request->validate([
             'nama'       => 'required|string|max:255|unique:barangs,nama',
             'satuan'     => 'required|in:kg,ikat,buah,pck',
-            'harga_jual' => 'required|numeric|min:0',
         ]);
+        $validated['harga_jual'] = 0;
 
         $barang = Barang::create($validated);
 
@@ -44,8 +44,8 @@ class BarangController extends Controller
         $validated = $request->validate([
             'nama'       => 'required|string|max:255|unique:barangs,nama,' . $barang->id,
             'satuan'     => 'required|in:kg,ikat,buah,pck',
-            'harga_jual' => 'required|numeric|min:0',
         ]);
+        $validated['harga_jual'] = 0;
 
         $barang->update($validated);
 

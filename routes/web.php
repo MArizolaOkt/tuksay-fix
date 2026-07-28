@@ -10,26 +10,42 @@ use App\Http\Controllers\BelanjaController;
 use App\Http\Controllers\LogistikController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\FinanceReportController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Welcome / landing
+// Welcome / landing — redirect sesuai role
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    if (auth()->check()) {
+        return auth()->user()->isStaff()
+            ? redirect()->route('belanja.konsolidasi')
+            : redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
 });
 
-// Dashboard
-Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// ─── Routes yang bisa diakses Admin & Staff ─────────────────────────────────
+Route::middleware(['auth', 'verified', 'role:admin,staff'])->group(function () {
 
-Route::middleware('auth')->group(function () {
-
-    // ─── Profile (Breeze default) ───────────────────────────────────
+    // ─── Profile (Breeze default) ─────────────────────────────────────
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // ─── Master Data: Customers ─────────────────────────────────────
+    // ─── Belanja: Konsolidasi & Input Harga (Staff diizinkan) ─────────
+    Route::get('/belanja/konsolidasi', [BelanjaController::class, 'konsolidasi'])
+        ->name('belanja.konsolidasi');
+    Route::post('/belanja/harga', [BelanjaController::class, 'inputHarga'])
+        ->name('belanja.input-harga');
+});
+
+// ─── Routes khusus Admin ─────────────────────────────────────────────────────
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+
+    // ─── Dashboard ────────────────────────────────────────────────────
+    Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+        ->name('dashboard');
+
+    // ─── Master Data: Customers ───────────────────────────────────────
     Route::resource('customers', CustomerController::class);
     Route::get('/customers/{customer}/outlets-json', [CustomerController::class, 'outlets'])
         ->name('customers.outlets');
@@ -41,32 +57,32 @@ Route::middleware('auth')->group(function () {
     Route::delete('/customers/{customer}/outlets/{outlet}', [CustomerOutletController::class, 'destroy'])
         ->name('customer-outlets.destroy');
 
-    // ─── Master Data: Barangs ───────────────────────────────────────
+    // ─── Master Data: Barangs ─────────────────────────────────────────
     Route::resource('barangs', BarangController::class)->except(['show']);
 
     // ─── Master Data: Biaya Operasional (DIHAPUS — SKILL.md Perubahan 5) ────
 
-    // ─── Purchase Orders ────────────────────────────────────────────
+    // ─── Purchase Orders ──────────────────────────────────────────────
     Route::resource('purchase-orders', PurchaseOrderController::class);
     Route::patch('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus'])
         ->name('purchase-orders.status');
     Route::delete('/purchase-orders/{purchaseOrder}/destroy', [PurchaseOrderController::class, 'destroy'])
         ->name('purchase-orders.delete');
 
-    // ─── Belanja ────────────────────────────────────────────────────
-    Route::get('/belanja/konsolidasi', [BelanjaController::class, 'konsolidasi'])
-        ->name('belanja.konsolidasi');
-    Route::post('/belanja/harga', [BelanjaController::class, 'inputHarga'])
-        ->name('belanja.input-harga');
+    // ─── Belanja: Index & Show (Admin only) ───────────────────────────
+    Route::get('/belanja', [BelanjaController::class, 'index'])
+        ->name('belanja.index');
+    Route::get('/belanja/{daftarBelanja}', [BelanjaController::class, 'show'])
+        ->name('belanja.show');
 
-    // ─── Logistik / Surat Jalan ─────────────────────────────────────
+    // ─── Logistik / Surat Jalan ───────────────────────────────────────
     Route::get('/logistik', [LogistikController::class, 'index'])->name('logistik.index');
     Route::get('/logistik/create', [LogistikController::class, 'create'])->name('logistik.create');
     Route::post('/logistik/generate', [LogistikController::class, 'generate'])->name('logistik.generate');
     Route::get('/logistik/{suratJalan}', [LogistikController::class, 'show'])->name('logistik.show');
     Route::get('/logistik/{suratJalan}/print', [LogistikController::class, 'print'])->name('logistik.print');
 
-    // ─── Invoices ───────────────────────────────────────────────────
+    // ─── Invoices ─────────────────────────────────────────────────────
     Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices/generate', [InvoiceController::class, 'generate'])->name('invoices.generate');
@@ -74,11 +90,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices/{invoice}/print', [InvoiceController::class, 'print'])->name('invoices.print');
     Route::patch('/invoices/{invoice}/lunas', [InvoiceController::class, 'markLunas'])->name('invoices.lunas');
 
-    // ─── Finance Reports ────────────────────────────────────────────
+    // ─── Finance Reports ──────────────────────────────────────────────
     Route::get('/finance/dashboard', [FinanceReportController::class, 'dashboard'])->name('finance.dashboard');
     Route::get('/finance/price-trend', [FinanceReportController::class, 'priceTrend'])->name('finance.price-trend');
     Route::get('/finance/pl', [FinanceReportController::class, 'plReport'])->name('finance.pl');
     Route::get('/finance/margin', [FinanceReportController::class, 'marginAnalysis'])->name('finance.margin');
+
+    // ─── Manajemen User (Admin only) ──────────────────────────────────
+    Route::resource('users', UserController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';

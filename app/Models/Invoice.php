@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Invoice extends Model
 {
@@ -33,5 +34,11 @@ class Invoice extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function purchaseOrders(): BelongsToMany
+    {
+        return $this->belongsToMany(PurchaseOrder::class, 'invoice_purchase_orders')
+                    ->withTimestamps();
     }
 }

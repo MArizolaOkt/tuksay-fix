@@ -30,10 +30,17 @@
                     <a href="{{ route('customers.show', $suratJalan->customer) }}"
                        class="font-medium text-emerald-600 hover:underline">{{ $suratJalan->customer->nama }}</a>
                 </div>
+                @if($suratJalan->outlet)
                 <div class="flex justify-between">
                     <span class="text-gray-500">Outlet</span>
-                    <span class="font-medium text-gray-700">{{ $suratJalan->outlet->nama_outlet ?? '-' }}</span>
+                    <span class="font-medium text-gray-700">{{ $suratJalan->outlet->nama_outlet }}</span>
                 </div>
+                @elseif($suratJalan->customer->isCatering())
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Tipe</span>
+                    <span class="font-medium text-purple-700">🎉 Catering</span>
+                </div>
+                @endif
                 <div class="flex justify-between">
                     <span class="text-gray-500">Alamat</span>
                     <span class="text-right text-gray-600 max-w-32">{{ $suratJalan->customer->alamat }}</span>
@@ -48,8 +55,11 @@
                 <h3 class="font-semibold text-gray-900">Detail Item (Dari Purchase Order)</h3>
             </div>
             @foreach($pos as $po)
-                <div class="px-6 py-3 bg-emerald-50/30 border-b border-gray-50">
+                <div class="px-6 py-3 bg-emerald-50/30 border-b border-gray-50 flex items-center justify-between">
                     <span class="text-xs font-semibold text-emerald-700">PO: {{ $po->no_po }}</span>
+                    <span class="text-xs text-gray-500">
+                        Tgl. Kirim: <span class="font-medium {{ $po->tanggal_kirim ? 'text-gray-700' : 'text-gray-400 italic' }}">{{ $po->tanggal_kirim ? \Carbon\Carbon::parse($po->tanggal_kirim)->format('d/m/Y') : '-' }}</span>
+                    </span>
                 </div>
                 @foreach($po->items as $item)
                     <div class="px-6 py-3 flex items-center justify-between text-sm border-b border-gray-50">

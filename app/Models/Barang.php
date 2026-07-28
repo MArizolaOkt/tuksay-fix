@@ -17,6 +17,15 @@ class Barang extends Model
         'harga_jual' => 'decimal:2',
     ];
 
+    public function getHargaJualAttribute()
+    {
+        $latest = $this->hargaBelis()->orderByDesc('tanggal')->orderByDesc('id')->first();
+        if ($latest && $latest->harga_beli > 0) {
+            return (float) ($latest->harga_beli / 0.7);
+        }
+        return 0.00;
+    }
+
     public function poItems(): HasMany
     {
         return $this->hasMany(PoItem::class);

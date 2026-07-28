@@ -23,6 +23,18 @@ class DemoDataSeeder extends Seeder
             [
                 'name'              => 'Admin TUKSAY',
                 'password'          => Hash::make('password'),
+                'role'              => 'admin',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // ─── Staff User ───────────────────────────────────────────────
+        \App\Models\User::firstOrCreate(
+            ['email' => 'staff@tuksay.test'],
+            [
+                'name'              => 'Staff Belanja',
+                'password'          => Hash::make('password'),
+                'role'              => 'staff',
                 'email_verified_at' => now(),
             ]
         );
@@ -135,6 +147,7 @@ class DemoDataSeeder extends Seeder
                     'customer_id'        => $customer->id,
                     'customer_outlet_id' => $outlet->id,
                     'tanggal'            => $tanggal,
+                    'tanggal_kirim'      => $tanggal,
                     'no_ref'             => 'REF-' . strtoupper(substr(md5(rand()), 0, 6)),
                     'status'             => $status,
                 ]);
@@ -174,10 +187,12 @@ class DemoDataSeeder extends Seeder
         }
 
         $this->command->info('✅ Demo data berhasil di-seed!');
-        $this->command->info('   - 1 user admin (admin@tuksay.test / password)');
+        $this->command->info('   - admin@tuksay.test / password  (role: admin)');
+        $this->command->info('   - staff@tuksay.test / password  (role: staff)');
         $this->command->info('   - ' . count($createdBarangs) . ' produk barang');
         $this->command->info('   - ' . count($customers) . ' customers dengan outlets');
         $this->command->info('   - ' . PurchaseOrder::count() . ' purchase orders');
         $this->command->info('   - ' . BiayaOperasional::count() . ' catatan biaya operasional');
+
     }
 }

@@ -27,10 +27,13 @@ class DashboardController extends Controller
         // Revenue bulan ini
         $revenueBulanIni = DB::table('po_items')
             ->join('purchase_orders', 'po_items.purchase_order_id', '=', 'purchase_orders.id')
-            ->join('barangs', 'po_items.barang_id', '=', 'barangs.id')
+            ->leftJoin('harga_belis', function ($join) {
+                $join->on('po_items.barang_id', '=', 'harga_belis.barang_id')
+                     ->on('purchase_orders.tanggal_kirim', '=', 'harga_belis.tanggal');
+            })
             ->where('purchase_orders.status', 'selesai')
             ->whereBetween('purchase_orders.tanggal', [$monthStart, $monthEnd])
-            ->sum(DB::raw('po_items.qty * barangs.harga_jual'));
+            ->sum(DB::raw('po_items.qty * COALESCE(harga_belis.harga_beli, 0) / 0.7'));
 
         // Biaya operasional bulan ini
         $opexBulanIni = BiayaOperasional::whereBetween('tanggal', [$monthStart, $monthEnd])

@@ -2,155 +2,430 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice {{ $invoice->no_invoice }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; background: white; }
-        .page { width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-        .company-name { font-size: 24px; font-weight: bold; color: #1d5738; }
-        .company-sub { font-size: 11px; color: #666; }
-        .invoice-title { text-align: right; }
-        .invoice-title h1 { font-size: 20px; font-weight: bold; text-transform: uppercase; color: #333; letter-spacing: 2px; }
-        .invoice-title .no { font-size: 14px; color: #7c3aed; font-weight: 700; margin-top: 4px; }
-        .invoice-title .status { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .status-terbit { background: #fef3c7; color: #92400e; }
-        .status-lunas { background: #d1fae5; color: #065f46; }
-        .divider { border-top: 2px solid #1d5738; margin: 16px 0; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
-        .info-label { font-size: 10px; text-transform: uppercase; color: #888; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px; }
-        .info-value { font-size: 13px; font-weight: 600; }
-        .info-sub { font-size: 11px; color: #555; margin-top: 2px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        thead tr { background: #1d5738; color: white; }
-        th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        th.right { text-align: right; }
-        tbody tr:nth-child(even) { background: #f8faf9; }
-        td { padding: 9px 12px; font-size: 12px; border-bottom: 1px solid #e8e8e8; }
-        .td-right { text-align: right; }
-        .group-row { background: #ecfdf5 !important; }
-        .group-row td { font-weight: 600; color: #065f46; font-size: 11px; padding: 6px 12px; }
-        tfoot td { padding: 10px 12px; font-weight: 700; font-size: 13px; }
-        .total-row { background: #f0fdf4; }
-        .total-amount { color: #7c3aed; font-size: 16px; }
-        .footer-info { margin-top: 24px; padding: 16px; background: #f8faf9; border-radius: 8px; border: 1px solid #e8e8e8; }
-        .footer-info h4 { font-size: 11px; color: #666; margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
-        .sign-grid { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .sign-box { text-align: center; }
-        .sign-label { font-size: 11px; color: #555; margin-bottom: 60px; }
-        .sign-line { border-top: 1px solid #333; padding-top: 4px; font-size: 11px; }
-        .no-print { display: block; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #1a1a1a;
+            background: white;
+        }
+
+        /* ─── Print Bar (no-print) ─── */
+        .print-bar {
+            background: #2d6a4f;
+            padding: 10px 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .print-bar button {
+            padding: 7px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            border: none;
+        }
+        .btn-print { background: white; color: #2d6a4f; }
+        .btn-close  { background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4) !important; }
+
+        /* ─── Page ─── */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 14mm 16mm 16mm 16mm;
+            background: white;
+        }
+
+        /* ─── Header ─── */
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .company-block .company-name {
+            font-size: 15px;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
+        }
+        .company-block .company-addr {
+            font-size: 9.5px;
+            color: #333;
+            line-height: 1.5;
+            margin-top: 3px;
+        }
+
+        .invoice-center {
+            text-align: center;
+            flex: 1;
+            padding-top: 2px;
+        }
+        .invoice-center h1 {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #111;
+        }
+        .invoice-center .inv-slash {
+            font-size: 13px;
+            color: #555;
+            margin-top: 2px;
+            letter-spacing: 1px;
+        }
+
+        /* Logo TUKSAY (styled text) */
+        .logo-block {
+            text-align: right;
+        }
+        .logo-tuksay {
+            display: inline-block;
+            background: #fff;
+            border: 2px solid #2d6a4f;
+            border-radius: 8px;
+            padding: 5px 12px 5px 10px;
+            text-align: center;
+        }
+        .logo-tuksay .logo-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: #2d6a4f;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+        .logo-tuksay .logo-tagline {
+            font-size: 7px;
+            color: #2d6a4f;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            font-style: italic;
+        }
+
+        /* ─── Info Box (border) ─── */
+        .info-box {
+            border: 1px solid #999;
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 12px;
+            margin: 10px 0;
+            gap: 16px;
+        }
+        .info-box .recipient .recipient-label {
+            font-size: 9px;
+            color: #555;
+            margin-bottom: 3px;
+        }
+        .info-box .recipient .recipient-name {
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+        .info-box .recipient .recipient-addr {
+            font-size: 9.5px;
+            color: #333;
+            line-height: 1.55;
+            margin-top: 2px;
+        }
+
+        .info-box .meta-table {
+            font-size: 10.5px;
+            border-collapse: collapse;
+            min-width: 200px;
+            align-self: flex-start;
+            flex-shrink: 0;
+        }
+        .info-box .meta-table td {
+            padding: 1.5px 0;
+            vertical-align: top;
+        }
+        .info-box .meta-table td.label {
+            white-space: nowrap;
+            color: #444;
+            width: 80px;
+        }
+        .info-box .meta-table td.sep {
+            padding: 1.5px 6px;
+            color: #444;
+        }
+        .info-box .meta-table td.value {
+            font-weight: 600;
+        }
+
+        /* ─── Items Table ─── */
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+            font-size: 10.5px;
+        }
+        table.items thead tr {
+            background: #c8c8c8;
+        }
+        table.items thead th {
+            padding: 6px 7px;
+            font-weight: 700;
+            font-size: 10px;
+            text-align: center;
+            border: 1px solid #999;
+        }
+        table.items thead th.left { text-align: left; }
+        table.items thead th.right { text-align: right; }
+
+        table.items tbody td {
+            padding: 5px 7px;
+            border: 1px solid #ccc;
+            vertical-align: top;
+        }
+        table.items tbody td.center { text-align: center; }
+        table.items tbody td.right  { text-align: right; }
+
+        /* PO separator row */
+        table.items tbody tr.po-row td {
+            background: #f0f0f0;
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #2d6a4f;
+            padding: 3px 7px;
+            border: 1px solid #bbb;
+        }
+
+        /* Summary rows (subtotal, ppn, grand total) */
+        table.items tfoot td {
+            padding: 5px 7px;
+            border: 1px solid #ccc;
+            font-size: 10.5px;
+        }
+        table.items tfoot tr.summary-row td.label {
+            text-align: right;
+            font-weight: 600;
+        }
+        table.items tfoot tr.summary-row td.value {
+            text-align: right;
+            min-width: 90px;
+        }
+        table.items tfoot tr.grand-total td {
+            font-weight: 700;
+            font-size: 11px;
+            background: #f5f5f5;
+        }
+        table.items tfoot tr.grand-total td.label {
+            text-align: right;
+        }
+        table.items tfoot tr.grand-total td.value {
+            text-align: right;
+        }
+
+        /* ─── Note / Bank ─── */
+        .note-section {
+            margin-top: 14px;
+            font-size: 10.5px;
+        }
+        .note-section .note-label {
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        .note-section .bank-info {
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        /* ─── Signature ─── */
+        .sign-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 36px;
+            gap: 24px;
+        }
+        .sign-col {
+            flex: 1;
+            font-size: 10.5px;
+        }
+        .sign-col .sign-title {
+            margin-bottom: 64px;
+        }
+        .sign-col .sign-line {
+            border-top: 1px solid #555;
+            padding-top: 4px;
+            display: inline-block;
+            min-width: 160px;
+        }
+
+        /* Print */
         @media print {
-            .no-print { display: none; }
+            .print-bar { display: none !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .page { margin: 0; padding: 12mm 14mm; }
         }
     </style>
 </head>
 <body>
 
-<div class="no-print" style="background:#7c3aed; padding:12px 20mm; display:flex; gap:12px; align-items:center;">
-    <button onclick="window.print()" style="padding:8px 20px; background:white; color:#7c3aed; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px;">
-        🖨️ Cetak Invoice
-    </button>
-    <button onclick="window.close()" style="padding:8px 16px; background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:8px; cursor:pointer; font-size:13px;">
-        Tutup
-    </button>
+{{-- Print Bar (hidden on print) --}}
+<div class="print-bar">
+    <button class="btn-print" onclick="window.print()">🖨️ Cetak Invoice</button>
+    <button class="btn-close" onclick="window.history.back()">← Kembali</button>
 </div>
 
 <div class="page">
-    <div class="header">
-        <div>
+
+    {{-- ─── HEADER ─── --}}
+    <div class="header-row">
+        {{-- Kiri: Info Perusahaan --}}
+        <div class="company-block">
             <div class="company-name">TUKSAY</div>
-            <div class="company-sub">Manajemen Supplier Produk Segar</div>
+            <div class="company-addr">
+                Kalia Residence 3 No. A1<br>
+                Jl. Rawa Kopi RT 06 RW 04, Pangkalan Jati Baru<br>
+                Cinere, Depok 16513 &nbsp;|&nbsp; Phone : 081290126525
+            </div>
         </div>
-        <div class="invoice-title">
-            <h1>Invoice</h1>
-            <div class="no">{{ $invoice->no_invoice }}</div>
-            <div class="status {{ $invoice->status === 'lunas' ? 'status-lunas' : 'status-terbit' }}">
-                {{ strtoupper($invoice->status) }}
+
+        {{-- Tengah: Judul Invoice --}}
+        <div class="invoice-center">
+            <h1>INVOICE</h1>
+            <div class="inv-slash">{{ $invoice->no_invoice }}</div>
+        </div>
+
+        {{-- Kanan: Logo TUKSAY --}}
+        <div class="logo-block">
+            <div class="logo-tuksay">
+                <div class="logo-name">TUKSAY</div>
+                <div class="logo-tagline">sayur &amp; buah berkualitas</div>
             </div>
         </div>
     </div>
-    <div class="divider"></div>
 
-    <div class="info-grid">
-        <div>
-            <div class="info-label">Ditagihkan kepada</div>
-            <div class="info-value">{{ $invoice->customer->nama }}</div>
-            <div class="info-sub">{{ $invoice->customer->nama_perusahaan }}</div>
-            <div class="info-sub" style="margin-top:4px;">{{ $invoice->customer->alamat }}</div>
-            <div style="margin-top:8px;">
-                <span style="display:inline-block; padding:2px 8px; background:#dbeafe; color:#1d4ed8; border-radius:10px; font-size:10px; font-weight:700;">
-                    {{ $invoice->customer->payment_method }}
-                </span>
-            </div>
+    {{-- ─── INFO BOX ─── --}}
+    <div class="info-box">
+        {{-- Kiri: Kepada --}}
+        <div class="recipient">
+            <div class="recipient-label">Kepada:</div>
+            <div class="recipient-name">{{ strtoupper($invoice->customer->nama) }}</div>
+            @if($invoice->customer->nama_perusahaan)
+                <div class="recipient-addr">{{ $invoice->customer->nama_perusahaan }}</div>
+            @endif
+            @if($invoice->customer->alamat)
+                <div class="recipient-addr">{!! nl2br(e($invoice->customer->alamat)) !!}</div>
+            @endif
         </div>
-        <div style="text-align:right;">
-            <div class="info-label">Tanggal Invoice</div>
-            <div class="info-value">{{ \Carbon\Carbon::parse($invoice->tanggal)->format('d F Y') }}</div>
-        </div>
+
+        {{-- Kanan: Meta Info --}}
+        <table class="meta-table">
+            <tr>
+                <td class="label">Tanggal</td>
+                <td class="sep">:</td>
+                <td class="value">{{ \Carbon\Carbon::parse($invoice->tanggal)->translatedFormat('d F Y') }}</td>
+            </tr>
+            @php
+                $firstPo = $pos->first();
+            @endphp
+            @if($firstPo)
+            <tr>
+                <td class="label">Nomor PO</td>
+                <td class="sep">:</td>
+                <td class="value">{{ $firstPo->no_po }}{{ $pos->count() > 1 ? ', ...' : '' }}</td>
+            </tr>
+            @endif
+            <tr>
+                <td class="label">Payment</td>
+                <td class="sep">:</td>
+                <td class="value">{{ strtoupper($invoice->customer->payment_method ?? '-') }}</td>
+            </tr>
+        </table>
     </div>
 
-    <table>
+    {{-- ─── ITEMS TABLE ─── --}}
+    @php
+        $no = 1;
+        $grandTotal = 0;
+    @endphp
+
+    <table class="items">
         <thead>
             <tr>
-                <th style="width:36px;">No</th>
-                <th>Deskripsi</th>
-                <th class="right" style="width:70px;">Qty</th>
-                <th class="right" style="width:50px;">Sat</th>
-                <th class="right" style="width:100px;">Harga Satuan</th>
-                <th class="right" style="width:110px;">Subtotal</th>
+                <th style="width:28px;">No</th>
+                <th style="width:40px;">QTY</th>
+                <th style="width:36px;">Satuan</th>
+                <th class="left">Nama Barang</th>
+                <th class="right" style="width:90px;">Harga Satuan</th>
+                <th class="right" style="width:90px;">Harga Total</th>
             </tr>
         </thead>
         <tbody>
-            @php $no = 1; $grandTotal = 0; @endphp
             @foreach($pos as $po)
-                <tr class="group-row">
-                    <td colspan="6">{{ $po->no_po }} — {{ $po->outlet->nama_outlet ?? '-' }} ({{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }})</td>
+                {{-- Baris pemisah per PO --}}
+                @if($pos->count() > 1)
+                <tr class="po-row">
+                    <td colspan="6">{{ $po->no_po }} — {{ $po->outlet->nama_outlet ?? $invoice->customer->nama }} ({{ \Carbon\Carbon::parse($po->tanggal)->format('d/m/Y') }})</td>
                 </tr>
+                @endif
+
                 @foreach($po->items as $item)
-                    @php $subtotal = $item->qty * $item->barang->harga_jual; $grandTotal += $subtotal; @endphp
+                    @php
+                        $subtotal = $item->qty * $item->harga_jual;
+                        $grandTotal += $subtotal;
+                    @endphp
                     <tr>
-                        <td>{{ $no++ }}</td>
+                        <td class="center">{{ $no++ }}</td>
+                        <td class="center">
+                            {{-- Format qty: hilangkan trailing zeros --}}
+                            {{ rtrim(rtrim(number_format($item->qty, 3, ',', '.'), '0'), ',') }}
+                        </td>
+                        <td class="center">{{ $item->barang->satuan ?? '-' }}</td>
                         <td>{{ $item->barang->nama }}</td>
-                        <td class="td-right">{{ number_format($item->qty, 3) }}</td>
-                        <td class="td-right">{{ $item->barang->satuan }}</td>
-                        <td class="td-right">Rp {{ number_format($item->barang->harga_jual, 0, ',', '.') }}</td>
-                        <td class="td-right">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+                        <td class="right">Rp &nbsp;{{ number_format($item->harga_jual, 0, ',', '.') }}</td>
+                        <td class="right">Rp &nbsp;{{ number_format($subtotal, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             @endforeach
         </tbody>
         <tfoot>
-            <tr class="total-row">
-                <td colspan="5" style="text-align:right; font-weight:700; font-size:13px;">TOTAL TAGIHAN</td>
-                <td class="td-right total-amount">Rp {{ number_format($invoice->total_tagihan, 0, ',', '.') }}</td>
+            <tr class="summary-row">
+                <td colspan="5" class="label">Sub Total</td>
+                <td class="value">Rp &nbsp;{{ number_format($grandTotal, 0, ',', '.') }}</td>
+            </tr>
+            <tr class="summary-row">
+                <td colspan="5" class="label">Ppn11%</td>
+                <td class="value" style="text-align:right; color:#888;">-</td>
+            </tr>
+            <tr class="grand-total">
+                <td colspan="5" class="label">Grand Total</td>
+                <td class="value">Rp &nbsp;{{ number_format($grandTotal, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>
 
-    <div class="footer-info">
-        <h4>Informasi Pembayaran</h4>
-        <p style="font-size:12px; color:#555;">
-            Metode pembayaran: <strong>{{ $invoice->customer->payment_method }}</strong>
-            — Mohon cantumkan nomor invoice <strong>{{ $invoice->no_invoice }}</strong> sebagai referensi pembayaran.
-        </p>
+    {{-- ─── NOTE / BANK ─── --}}
+    <div class="note-section" style="margin-top:12px;">
+        <div class="note-label">Note :</div>
+        <div class="bank-info">BCA &nbsp;2670285378 &nbsp;a/n Wirawan Putra Haryatama</div>
     </div>
 
-    <div class="sign-grid">
-        <div class="sign-box">
-            <div class="sign-label">Dikeluarkan oleh,</div>
-            <div class="sign-line">( __________________ )<br><small>TUKSAY</small></div>
+    {{-- ─── TANDA TANGAN ─── --}}
+    <div class="sign-row">
+        <div class="sign-col">
+            <div class="sign-title">Diterima Oleh,</div>
+            <div class="sign-line">( ....................................... )</div>
         </div>
-        <div class="sign-box">
-            <div class="sign-label">Diterima oleh,</div>
-            <div class="sign-line">( __________________ )<br><small>{{ $invoice->customer->nama }}</small></div>
+        <div class="sign-col" style="text-align:right;">
+            <div class="sign-title">Hormat Kami,<br><strong>TUKSAY</strong></div>
+            <div style="display:inline-block; text-align:center;">
+                {{-- Placeholder cap/stempel --}}
+                <div style="width:90px; height:90px; border:2px dashed #2d6a4f; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 6px; color:#2d6a4f; font-size:9px; font-weight:700; line-height:1.3; text-align:center;">
+                    CAP<br>TUKSAY
+                </div>
+            </div>
         </div>
     </div>
 
-    <p style="margin-top:24px; font-size:10px; color:#aaa; text-align:center;">
-        Invoice dicetak pada {{ now()->format('d/m/Y H:i') }} — TUKSAY ERP
-    </p>
-</div>
+</div>{{-- /page --}}
+
 </body>
 </html>

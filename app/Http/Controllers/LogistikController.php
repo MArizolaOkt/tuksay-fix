@@ -16,16 +16,19 @@ class LogistikController extends Controller
     public function index(Request $request)
     {
         $query = SuratJalan::with(['customer', 'outlet'])
-            ->orderByDesc('tanggal')
+            ->select('surat_jalans.*')
+            ->addSelect(['tanggal_kirim' => PurchaseOrder::select('tanggal_kirim')
+                ->whereColumn('purchase_orders.customer_id', 'surat_jalans.customer_id')
+                ->whereColumn('purchase_orders.tanggal', 'surat_jalans.tanggal')
+                ->whereIn('purchase_orders.status', ['proses', 'menunggu_pembayaran', 'selesai'])
+                ->orderByDesc('purchase_orders.id')
+                ->limit(1)
+            ])
             ->orderByDesc('id');
 
         if ($request->filled('search')) {
             $query->where('no_sj', 'like', '%' . $request->search . '%')
                 ->orWhereHas('customer', fn($q) => $q->where('nama', 'like', '%' . $request->search . '%'));
-        }
-
-        if ($request->filled('tanggal')) {
-            $query->where('tanggal', $request->tanggal);
         }
 
         $suratJalans = $query->paginate(15)->withQueryString();
@@ -73,9 +76,12 @@ class LogistikController extends Controller
         // Ambil PO yang relevan (customer + outlet + tanggal sama, status proses)
         $pos = PurchaseOrder::with(['items.barang'])
             ->where('customer_id', $suratJalan->customer_id)
-            ->where('customer_outlet_id', $suratJalan->customer_outlet_id)
+            ->when($suratJalan->customer_outlet_id,
+                fn($q) => $q->where('customer_outlet_id', $suratJalan->customer_outlet_id),
+                fn($q) => $q->whereNull('customer_outlet_id')
+            )
             ->where('tanggal', $suratJalan->tanggal)
-            ->whereIn('status', ['proses', 'selesai'])
+            ->whereIn('status', ['proses', 'menunggu_pembayaran', 'selesai'])
             ->get();
 
         return view('logistik.show', compact('suratJalan', 'pos'));
@@ -90,9 +96,12 @@ class LogistikController extends Controller
 
         $pos = PurchaseOrder::with(['items.barang'])
             ->where('customer_id', $suratJalan->customer_id)
-            ->where('customer_outlet_id', $suratJalan->customer_outlet_id)
+            ->when($suratJalan->customer_outlet_id,
+                fn($q) => $q->where('customer_outlet_id', $suratJalan->customer_outlet_id),
+                fn($q) => $q->whereNull('customer_outlet_id')
+            )
             ->where('tanggal', $suratJalan->tanggal)
-            ->whereIn('status', ['proses', 'selesai'])
+            ->whereIn('status', ['proses', 'menunggu_pembayaran', 'selesai'])
             ->get();
 
         return view('logistik.print', compact('suratJalan', 'pos'));

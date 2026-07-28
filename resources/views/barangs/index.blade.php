@@ -18,7 +18,6 @@
             <tr class="bg-gray-50 border-b border-gray-100">
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Produk</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Satuan</th>
-                <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Harga Jual</th>
                 <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
@@ -40,9 +39,6 @@
                             {{ $barang->satuan }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-right font-semibold text-gray-900">
-                        Rp {{ number_format($barang->harga_jual, 0, ',', '.') }}
-                    </td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex items-center justify-end gap-2">
                             <a href="{{ route('barangs.edit', $barang) }}"
@@ -62,7 +58,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="px-6 py-12 text-center text-gray-400 text-sm">
+                    <td colspan="3" class="px-6 py-12 text-center text-gray-400 text-sm">
                         Belum ada produk. <a href="{{ route('barangs.create') }}" class="text-emerald-600 hover:underline">Tambah sekarang →</a>
                     </td>
                 </tr>

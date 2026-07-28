@@ -16,14 +16,30 @@ class PurchaseOrderController extends Controller
     public function index(Request $request)
     {
         $query = PurchaseOrder::with(['customer', 'outlet'])
+            ->orderByRaw("CASE status 
+                WHEN 'baru' THEN 1 
+                WHEN 'proses' THEN 2 
+                WHEN 'menunggu_pembayaran' THEN 3 
+                WHEN 'selesai' THEN 4 
+                ELSE 5 
+            END ASC")
             ->orderBy('tanggal', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->filled('dari_tanggal')) {
+            $query->whereDate('tanggal', '>=', $request->dari_tanggal);
+        }
+        if ($request->filled('sampai_tanggal')) {
+            $query->whereDate('tanggal', '<=', $request->sampai_tanggal);
+        }
         if ($request->filled('search')) {
-            $query->where('no_po', 'like', '%' . $request->search . '%')
-                ->orWhereHas('customer', fn($q) => $q->where('nama', 'like', '%' . $request->search . '%'));
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('no_po', 'like', '%' . $search . '%')
+                  ->orWhereHas('customer', fn($sub) => $sub->where('nama', 'like', '%' . $search . '%'));
+            });
         }
 
         $purchaseOrders = $query->paginate(15)->withQueryString();
@@ -87,7 +103,11 @@ class PurchaseOrderController extends Controller
     public function show(PurchaseOrder $purchaseOrder)
     {
         $purchaseOrder->load(['customer', 'outlet', 'items.barang.hargaBelis']); // hargaBelis: Perubahan 3
-        return view('purchase-orders.show', compact('purchaseOrder'));
+
+        // Cek apakah surat jalan sudah dicetak untuk PO ini
+        $suratJalanDicetak = $purchaseOrder->suratJalanSudahDicetak();
+
+        return view('purchase-orders.show', compact('purchaseOrder', 'suratJalanDicetak'));
     }
 
     // CTRL-001: edit - Edit form
@@ -150,10 +170,18 @@ class PurchaseOrderController extends Controller
     public function updateStatus(Request $request, PurchaseOrder $purchaseOrder)
     {
         $request->validate([
-            'status' => 'required|in:baru,proses,selesai',
+            'status' => 'required|in:baru,proses,menunggu_pembayaran,selesai',
         ]);
-        $purchaseOrder->update(['status' => $request->status]);
-        return back()->with('success', 'Status PO berhasil diperbarui.');
+
+        $newStatus = $request->status;
+
+        // Validasi aturan transisi status
+        if (!$purchaseOrder->canTransitionTo($newStatus)) {
+            return back()->with('error', $purchaseOrder->statusTransitionMessage($newStatus));
+        }
+
+        $purchaseOrder->update(['status' => $newStatus]);
+        return back()->with('success', 'Status PO berhasil diperbarui menjadi "' . ucfirst($newStatus) . '".');
     }
 
     // CTRL-001: destroy - Hapus PO (hanya status baru)

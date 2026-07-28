@@ -19,11 +19,9 @@
             <input type="text" name="search" value="{{ request('search') }}"
                    placeholder="Cari No. SJ / customer..."
                    class="flex-1 min-w-48 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                   class="px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
             <button type="submit"
                     class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors">
-                Filter
+                Cari
             </button>
         </form>
     </div>
@@ -36,6 +34,7 @@
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell">Customer</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Outlet</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Tanggal</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Tgl. Kirim</th>
                     <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
@@ -49,6 +48,9 @@
                         <td class="px-6 py-4 text-gray-500 hidden lg:table-cell">{{ $sj->outlet->nama_outlet ?? '-' }}</td>
                         <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">
                             {{ \Carbon\Carbon::parse($sj->tanggal)->format('d/m/Y') }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 hidden sm:table-cell">
+                            {{ $sj->tanggal_kirim ? \Carbon\Carbon::parse($sj->tanggal_kirim)->format('d/m/Y') : '-' }}
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
@@ -65,7 +67,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-400 text-sm">
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400 text-sm">
                             Belum ada Surat Jalan.
                             <a href="{{ route('logistik.create') }}" class="text-emerald-600 hover:underline">Buat sekarang →</a>
                         </td>

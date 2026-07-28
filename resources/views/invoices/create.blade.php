@@ -45,9 +45,6 @@
                     @foreach($posByCustomer as $custId => $cPOs)
                         <div x-show="selectedCustomer == '{{ $custId }}' || !selectedCustomer">
                             @foreach($cPOs as $po)
-                                @php
-                                    $totalPO = $po->items->sum(fn($i) => $i->qty * $i->barang->harga_jual);
-                                @endphp
                                 <label class="flex items-start gap-4 p-4 border-2 border-gray-100 rounded-xl cursor-pointer hover:border-emerald-300 transition-colors mb-3">
                                     <input type="checkbox" name="purchase_order_ids[]" value="{{ $po->id }}"
                                            class="mt-0.5 text-emerald-600 focus:ring-emerald-500 rounded">
@@ -58,10 +55,6 @@
                                         </div>
                                         <p class="text-sm text-gray-600">{{ $po->customer->nama }} — {{ $po->outlet->nama_outlet ?? '-' }}</p>
                                         <p class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($po->tanggal)->format('d M Y') }}</p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0">
-                                        <p class="font-bold text-gray-900">Rp {{ number_format($totalPO, 0, ',', '.') }}</p>
-                                        <p class="text-xs text-gray-400">{{ $po->items->count() }} item</p>
                                     </div>
                                 </label>
                             @endforeach

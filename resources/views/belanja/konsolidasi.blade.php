@@ -2,8 +2,33 @@
 @section('title', 'Belanja Harian')
 @section('page-title', 'Belanja Harian')
 @section('page-subtitle', 'Konsolidasi kebutuhan belanja berdasarkan PO')
+@section('header-actions')
+    <a href="{{ route('belanja.index') }}"
+       class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-xl transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Riwayat Daftar Belanja
+    </a>
+@endsection
 
 <div class="space-y-4">
+
+    {{-- Flash: Daftar Belanja tersimpan --}}
+    @if(session('success'))
+        <div class="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-700">
+            <svg class="w-5 h-5 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>{{ session('success') }}</span>
+            @if($recordBelanja)
+                <a href="{{ route('belanja.show', $recordBelanja) }}"
+                   class="ml-auto font-semibold underline hover:no-underline shrink-0">
+                    Lihat {{ $recordBelanja->no_db }} →
+                </a>
+            @endif
+        </div>
+    @endif
 
     {{-- Date Filter --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
@@ -17,6 +42,27 @@
             </button>
             <span class="text-sm text-gray-400">{{ $konsolidasi->count() }} produk</span>
         </form>
+        @if($isAutoFallback)
+            <div class="mt-3 flex items-start gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+                <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                <span>Tidak ada PO aktif untuk hari ini. Menampilkan data dari tanggal terdekat: <strong>{{ \Carbon\Carbon::parse($tanggal)->format('d M Y') }}</strong></span>
+            </div>
+        @endif
+        @if($recordBelanja)
+            <div class="mt-3 flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
+                <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Sudah ada record daftar belanja untuk tanggal ini:</span>
+                <a href="{{ route('belanja.show', $recordBelanja) }}"
+                   class="font-mono font-semibold hover:underline">
+                    {{ $recordBelanja->no_db }}
+                </a>
+                <span class="text-blue-500">— menyimpan harga akan memperbarui record ini.</span>
+            </div>
+        @endif
     </div>
 
     {{-- Summary Cards --}}
@@ -63,7 +109,6 @@
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Produk</th>
                             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Qty</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">Breakdown Outlet</th>
-                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Harga Jual</th>
                             <th class="px-6 py-3 text-center text-xs font-semibold text-emerald-600 uppercase tracking-wider bg-emerald-50/50">Harga Beli</th>
                             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Modal</th>
                         </tr>
@@ -77,14 +122,19 @@
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{{ $item->satuan }}</span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <span class="text-xl font-bold text-gray-900">{{ number_format($item->total_qty, 3) }}</span>
+                                <span class="text-xl font-bold text-gray-900">{{ round($item->total_qty, 2) }}</span>
                                 <span class="text-xs text-gray-400 ml-1">{{ $item->satuan }}</span>
                             </td>
                             <td class="px-6 py-4 text-xs text-gray-500 hidden lg:table-cell max-w-xs">
-                                {{ $item->outlet_breakdown }}
-                            </td>
-                            <td class="px-6 py-4 text-right text-gray-600">
-                                Rp {{ number_format($item->harga_jual, 0, ',', '.') }}
+                                @if($item->outlet_breakdown)
+                                    <ul class="list-none space-y-1">
+                                        @foreach(explode(' | ', $item->outlet_breakdown) as $breakdown)
+                                            <li>{{ $breakdown }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <span class="text-gray-400">—</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 bg-emerald-50/30">
                                 <div class="relative">
@@ -109,7 +159,7 @@
                     </tbody>
                     <tfoot>
                         <tr class="bg-gray-50 border-t border-gray-200">
-                            <td colspan="5" class="px-6 py-4 text-right font-semibold text-gray-700">Total Modal Hari Ini</td>
+                            <td colspan="4" class="px-6 py-4 text-right font-semibold text-gray-700">Total Modal Hari Ini</td>
                             <td class="px-6 py-4 text-right font-bold text-emerald-700 text-lg">
                                 Rp {{ number_format($totalModal, 0, ',', '.') }}
                             </td>
